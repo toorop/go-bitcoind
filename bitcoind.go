@@ -3,7 +3,7 @@ package bitcoind
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	//"fmt"
 )
 
 const (
@@ -19,48 +19,34 @@ type bitcoind struct {
 }
 
 // New return a new bitcoind
-func New(host string, port int, user, passwd string, useSSL bool) *bitcoind {
-	rpcClient := newClient(host, port, user, passwd, useSSL)
-	return &bitcoind{rpcClient}
+func New(host string, port int, user, passwd string, useSSL bool) (*bitcoind, error) {
+	rpcClient, err := newClient(host, port, user, passwd, useSSL)
+	if err != nil {
+		return nil, err
+	}
+	return &bitcoind{rpcClient}, nil
 }
 
-// rpcErr2Err return an error from an RPC error
-func rpcErr2Err(rpcErr interface{}) error {
-	r := rpcErr.(map[string]interface{})
-	return errors.New(fmt.Sprintf("(%v) %s", r["code"].(float64), r["message"].(string)))
+// BackupWallet Safely copies wallet.dat to destination,
+// which can be a directory or a path with filename on the remote server
+func (b *bitcoind) BackupWallet(destination string) (err error) {
+	r, err := b.client.call("backupwallet", []string{destination})
+	err = handleError(err, &r)
+	return
 }
-
-/*type Info struct {
-	Balance         Amount
-	Blocks          int
-	Connections     int
-	Difficulty      float64
-	Errors          string
-	KeyPoolOldest   uint32
-	KeyPoolSize     int
-	PayTxFee        Amount
-	ProtocolVersion int
-	Proxy           string
-	Testnet         bool
-	Version         int
-	WalletVersion   int
-}*/
 
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *bitcoind) GetInfo() (i info, err error) {
 	r, err := b.client.call("getinfo", nil)
+	err = handleError(err, &r)
 	if err != nil {
-		return
-	}
-	if r.Err != nil {
-		err = rpcErr2Err(r.Err)
 		return
 	}
 	err = json.Unmarshal(r.Result, &i)
 	return
 }
 
-// GetNewAddress return a new address for account "account". account parameter is optional
+// GetNewAddress return a new address for account [account].
 func (b *bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 	// 0 or 1 account
 	if len(account) > 1 {
@@ -68,29 +54,32 @@ func (b *bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 		return
 	}
 	r, err := b.client.call("getnewaddress", account)
+	err = handleError(err, &r)
 	if err != nil {
-		return
-	}
-	if r.Err != nil {
-		err = rpcErr2Err(r.Err)
 		return
 	}
 	addr = string(r.Result)
 	return
 }
 
-// GetAddressesByAccount return addresses associated with account "account"
+// GetAddressesByAccount return addresses associated with account <account>
 func (b *bitcoind) GetAddressesByAccount(account string) (addresses []string, err error) {
-	params := make([]string, 0)
-	params = append(params, account)
-	r, err := b.client.call("getaddressesbyaccount", params)
+	r, err := b.client.call("getaddressesbyaccount", []string{account})
+	err = handleError(err, &r)
 	if err != nil {
 		return
 	}
-	if r.Err != nil {
-		err = rpcErr2Err(r.Err)
+	err = json.Unmarshal(r.Result, &addresses)
+	return
+}
+
+// DumpPrivKey return private key as string associated to public address <address>
+func (b *bitcoind) DumpPrivKey(address string) (privKey string, err error) {
+	r, err := b.client.call("dumpprivkey", []string{address})
+	err = handleError(err, &r)
+	if err != nil {
 		return
 	}
-	err = json.Unmarshal(r.Result, &addresses)
+	err = json.Unmarshal(r.Result, &privKey)
 	return
 }
