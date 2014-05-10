@@ -39,7 +39,12 @@ type rpcResponse struct {
 	Err    interface{}     `json:"error"`
 }
 
-func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcClient) {
+func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcClient, err error) {
+	if len(host) == 0 {
+		err = errors.New("Bad call missing argument host")
+		return
+	}
+
 	var serverAddr string
 	if useSSL {
 		serverAddr = "https://"
