@@ -3,7 +3,7 @@ package bitcoind
 import (
 	"encoding/json"
 	"errors"
-	//"fmt"
+	"fmt"
 )
 
 const (
@@ -29,10 +29,27 @@ func New(host string, port int, user, passwd string, useSSL bool) (*bitcoind, er
 
 // BackupWallet Safely copies wallet.dat to destination,
 // which can be a directory or a path with filename on the remote server
-func (b *bitcoind) BackupWallet(destination string) (err error) {
+func (b *bitcoind) BackupWallet(destination string) error {
 	r, err := b.client.call("backupwallet", []string{destination})
+	return handleError(err, &r)
+}
+
+// DumpPrivKey return private key as string associated to public <address>
+func (b *bitcoind) DumpPrivKey(address string) (privKey string, err error) {
+	r, err := b.client.call("dumpprivkey", []string{address})
 	err = handleError(err, &r)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &privKey)
 	return
+}
+
+// EncryptWallet encrypts the wallet with <passphrase>.
+func (b *bitcoind) EncryptWallet(passphrase string) error {
+	r, err := b.client.call("encryptwallet", []string{passphrase})
+	fmt.Println(string(r.Result))
+	return handleError(err, &r)
 }
 
 // GetInfo return result of "getinfo" command (Amazing !)
@@ -70,16 +87,5 @@ func (b *bitcoind) GetAddressesByAccount(account string) (addresses []string, er
 		return
 	}
 	err = json.Unmarshal(r.Result, &addresses)
-	return
-}
-
-// DumpPrivKey return private key as string associated to public address <address>
-func (b *bitcoind) DumpPrivKey(address string) (privKey string, err error) {
-	r, err := b.client.call("dumpprivkey", []string{address})
-	err = handleError(err, &r)
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(r.Result, &privKey)
 	return
 }
