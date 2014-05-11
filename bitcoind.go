@@ -3,7 +3,7 @@ package bitcoind
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	//"fmt"
 )
 
 const (
@@ -37,8 +37,7 @@ func (b *bitcoind) BackupWallet(destination string) error {
 // DumpPrivKey return private key as string associated to public <address>
 func (b *bitcoind) DumpPrivKey(address string) (privKey string, err error) {
 	r, err := b.client.call("dumpprivkey", []string{address})
-	err = handleError(err, &r)
-	if err != nil {
+	if err = handleError(err, &r); err != nil {
 		return
 	}
 	err = json.Unmarshal(r.Result, &privKey)
@@ -48,15 +47,23 @@ func (b *bitcoind) DumpPrivKey(address string) (privKey string, err error) {
 // EncryptWallet encrypts the wallet with <passphrase>.
 func (b *bitcoind) EncryptWallet(passphrase string) error {
 	r, err := b.client.call("encryptwallet", []string{passphrase})
-	fmt.Println(string(r.Result))
 	return handleError(err, &r)
+}
+
+// GetAccount returns the account associated with the given address.
+func (b *bitcoind) GetAccount(address string) (account string, err error) {
+	r, err := b.client.call("getaccount", []string{address})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	account = string(r.Result)
+	return
 }
 
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *bitcoind) GetInfo() (i info, err error) {
 	r, err := b.client.call("getinfo", nil)
-	err = handleError(err, &r)
-	if err != nil {
+	if err = handleError(err, &r); err != nil {
 		return
 	}
 	err = json.Unmarshal(r.Result, &i)
@@ -71,8 +78,7 @@ func (b *bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 		return
 	}
 	r, err := b.client.call("getnewaddress", account)
-	err = handleError(err, &r)
-	if err != nil {
+	if err = handleError(err, &r); err != nil {
 		return
 	}
 	addr = string(r.Result)
@@ -82,8 +88,7 @@ func (b *bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 // GetAddressesByAccount return addresses associated with account <account>
 func (b *bitcoind) GetAddressesByAccount(account string) (addresses []string, err error) {
 	r, err := b.client.call("getaddressesbyaccount", []string{account})
-	err = handleError(err, &r)
-	if err != nil {
+	if err = handleError(err, &r); err != nil {
 		return
 	}
 	err = json.Unmarshal(r.Result, &addresses)
