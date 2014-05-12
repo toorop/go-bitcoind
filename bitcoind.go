@@ -60,6 +60,20 @@ func (b *bitcoind) GetAccount(address string) (account string, err error) {
 	return
 }
 
+// GetAccountAddress Returns the current bitcoin address for receiving
+// payments to this account.
+// If account does not exist, it will be created along with an
+// associated new address that will be returned.
+func (b *bitcoind) GetAccountAddress(account string) (address string, err error) {
+	r, err := b.client.call("getaccountaddress", []string{account})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	address = string(r.Result)
+	return
+
+}
+
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *bitcoind) GetInfo() (i info, err error) {
 	r, err := b.client.call("getinfo", nil)
