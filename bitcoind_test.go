@@ -64,7 +64,4 @@ var _ = Describe("Bitcoind", func() {
 		})
 
 	})
-
-	//bitcoindClient = New(nil)
-
 })
