@@ -10,4 +10,4 @@ install:
   - go install -v github.com/onsi/ginkgo/ginkgo
   - go get code.google.com/p/go.tools/cmd/cover
 
-script: PATH=$HOME/gopath/bin:$PATH ginkgo -r --randomizeAllSpecs --failOnPending --skipMeasurements --cover --trace --race
+script: PATH=$HOME/gopath/bin:$PATH ginkgo -r --randomizeAllSpecs --failOnPending --skipMeasurements --cover --trace
