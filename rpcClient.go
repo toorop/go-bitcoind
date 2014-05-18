@@ -44,7 +44,6 @@ func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcC
 		err = errors.New("Bad call missing argument host")
 		return
 	}
-
 	var serverAddr string
 	if useSSL {
 		serverAddr = "https://"
@@ -71,7 +70,7 @@ func (c *rpcClient) doTimeoutRequest(timer *time.Timer, req *http.Request) (*htt
 	case r := <-done:
 		return r.resp, r.err
 	case <-timer.C:
-		return nil, errors.New("timeout reading data from server")
+		return nil, errors.New("Timeout reading data from server")
 	}
 }
 
@@ -98,12 +97,13 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	}
 
 	resp, err := c.doTimeoutRequest(connectTimer, req)
-	defer resp.Body.Close()
 	if err != nil {
 		return
 	}
+	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
+	//fmt.Println(string(data))
 	if err != nil {
 		return
 	}
