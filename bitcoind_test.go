@@ -21,8 +21,47 @@ func getNewTestServer(handler http.Handler) (testServer *httptest.Server, host s
 }
 
 var _ = Describe("Bitcoind", func() {
-	Describe("get difficulty", func() {
 
+	Describe("backupwallet", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1400432805294160077}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.BackupWallet("/tmp/wallet.dat")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("dumpprivkey", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"K7boEpon3igLpbVv6xebaR4bHALHPeLQSHhUJGiZ9S1U85ERWWi9","error":null,"id":1400433741655216321}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			privKey, err := bitcoindClient.DumpPrivKey("1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should be a the pk", func() {
+				Expect(privKey).To(Equal("K7boEpon3igLpbVv6xebaR4bHALHPeLQSHhUJGiZ9S1U85ERWWi9"))
+			})
+		})
+	})
+
+	Describe("get difficulty", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintln(w, `{"result":8853416309.12779999,"error":null,"id":1400425780999713481}`)
@@ -62,6 +101,25 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).Should(MatchError("(6) fake error"))
 			})
 		})
-
 	})
+
+	Describe("walletpassphrase", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1400433627531460562}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.WalletPassphrase("fakePassPhrase", 60)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	//{"result":null,"error":null,"id":1400433627531460562}
 })
