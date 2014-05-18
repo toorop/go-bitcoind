@@ -3,14 +3,15 @@ package bitcoind
 import (
 	"encoding/json"
 	"errors"
-	//"fmt"
+	"fmt"
+	"strconv"
 )
 
 const (
 	// VERSION represents bicoind package version
 	VERSION = 0.1
 	// DEFAULT_RPCCLIENT_TIMEOUT represent http timeout for rcp client
-	RPCCLIENT_TIMEOUT = 30
+	RPCCLIENT_TIMEOUT = 5
 )
 
 // A bitpay represents a bitpay client wrapper
@@ -71,7 +72,101 @@ func (b *bitcoind) GetAccountAddress(account string) (address string, err error)
 	}
 	address = string(r.Result)
 	return
+}
 
+// GetBalance return the balance of the server or of a specific account
+//If [account] is "", returns the server's total available balance.
+//If [account] is specified, returns the balance in the account
+func (b *bitcoind) GetBalance(account string, minconf uint64) (balance float64, err error) {
+	r, err := b.client.call("getbalance", []interface{}{account, minconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	balance, err = strconv.ParseFloat(string(r.Result), 64)
+	return
+}
+
+// GetBestBlockhash returns the hash of the best (tip) block in the longest block chain.
+func (b *bitcoind) GetBestBlockhash() (bestBlockHash string, err error) {
+	r, err := b.client.call("getbestblockhash", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	bestBlockHash = string(r.Result)
+	return
+}
+
+// GetBlock returns information about the block with the given hash.
+func (b *bitcoind) GetBlock(blockHash string) (block block, err error) {
+	r, err := b.client.call("getblock", []string{blockHash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &block)
+	return
+}
+
+// GetBlockCount returns the number of blocks in the longest block chain.
+func (b *bitcoind) GetBlockCount() (count uint64, err error) {
+	r, err := b.client.call("getblockcount", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	count, err = strconv.ParseUint(string(r.Result), 10, 64)
+	return
+}
+
+// GetBlockHash returns hash of block in best-block-chain at <index>
+func (b *bitcoind) GetBlockHash(index uint64) (hash string, err error) {
+	r, err := b.client.call("getblockhash", []uint64{index})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	hash = string(r.Result)
+	return
+}
+
+// getBlockTemplateParams reperesent parameters for GetBlockTemplate
+type getBlockTemplateParams struct {
+	Mode         string   `json:"mode,omitempty"`
+	Capabilities []string `json:"capabilities,omitempty"`
+}
+
+// TODO a finir
+// GetBlockTemplate Returns data needed to construct a block to work on.
+// See BIP_0022 for more info on params.
+func (b *bitcoind) GetBlockTemplate(capabilities []string, mode string) (template string, err error) {
+	params := getBlockTemplateParams{
+		Mode:         mode,
+		Capabilities: capabilities,
+	}
+	r, err := b.client.call("getblocktemplate", []getBlockTemplateParams{params})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	fmt.Println(string(r.Result))
+	return
+}
+
+// GetConnectionCount returns the number of connections to other nodes.
+func (b *bitcoind) GetConnectionCount() (count uint64, err error) {
+	r, err := b.client.call("getconnectioncount", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	count, err = strconv.ParseUint(string(r.Result), 10, 64)
+	return
+}
+
+// GetDifficulty returns the proof-of-work difficulty as a multiple of
+// the minimum difficulty.
+func (b *bitcoind) GetDifficulty() (difficulty float64, err error) {
+	r, err := b.client.call("getdifficulty", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	difficulty, err = strconv.ParseFloat(string(r.Result), 64)
+	return
 }
 
 // GetInfo return result of "getinfo" command (Amazing !)
