@@ -1,0 +1,12 @@
+language: go
+go:
+  - 1.2
+  - tip
+
+install:
+  - go get -v -t ./...
+  - go get -v github.com/onsi/ginkgo
+  - go get -v github.com/onsi/gomega
+  - go install -v github.com/onsi/ginkgo/ginkgo
+
+script: PATH=$HOME/gopath/bin:$PATH ginkgo -r --randomizeAllSpecs --failOnPending --skipMeasurements --cover --trace --race
