@@ -11,7 +11,7 @@ const (
 	// VERSION represents bicoind package version
 	VERSION = 0.1
 	// DEFAULT_RPCCLIENT_TIMEOUT represent http timeout for rcp client
-	RPCCLIENT_TIMEOUT = 5
+	RPCCLIENT_TIMEOUT = 30
 )
 
 // A bitpay represents a bitpay client wrapper
@@ -140,6 +140,7 @@ func (b *bitcoind) GetBlockTemplate(capabilities []string, mode string) (templat
 		Mode:         mode,
 		Capabilities: capabilities,
 	}
+	// TODO []interface{}{mode, capa}
 	r, err := b.client.call("getblocktemplate", []getBlockTemplateParams{params})
 	if err = handleError(err, &r); err != nil {
 		return
@@ -202,4 +203,10 @@ func (b *bitcoind) GetAddressesByAccount(account string) (addresses []string, er
 	}
 	err = json.Unmarshal(r.Result, &addresses)
 	return
+}
+
+// walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
+func (b *bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
+	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})
+	return handleError(err, &r)
 }
