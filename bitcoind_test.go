@@ -103,28 +103,6 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})*/
 
-	Describe("get difficulty", func() {
-		Context("when success", func() {
-			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprintln(w, `{"result":8853416309.12779999,"error":null,"id":1400425780999713481}`)
-			})
-			ts, host, port, err := getNewTestServer(handler)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			defer ts.Close()
-			bitcoindClient, _ := New(host, port, "x", "fake", false)
-			difficulty, err := bitcoindClient.GetDifficulty()
-			It("should not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-
-			It("should return float64 8853416309.12779999", func() {
-				Expect(difficulty).Should(BeNumerically("==", 8853416309.12779999))
-			})
-		})
-	})
-
 	Describe("Testing GetAccount", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -828,6 +806,128 @@ var _ = Describe("Bitcoind", func() {
 			})
 			It("should return", func() {
 				Expect(blockCount).To(Equal("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"))
+			})
+		})
+	})
+
+	Describe("Testing GetConnectionCount", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":64,"error":null,"id":1400515307439961792}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			connectionCount, err := bitcoindClient.GetConnectionCount()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return", func() {
+				Expect(connectionCount).Should(BeNumerically("==", 64))
+			})
+		})
+	})
+
+	Describe("get difficulty", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":8853416309.12779999,"error":null,"id":1400425780999713481}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			difficulty, err := bitcoindClient.GetDifficulty()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return float64 8853416309.12779999", func() {
+				Expect(difficulty).Should(BeNumerically("==", 8853416309.12779999))
+			})
+		})
+	})
+
+	Describe("Testing GetInfo", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"version":99900,"protocolversion":70002,"walletversion":60000,"balance":0.00000000,"blocks":301573,"timeoffset":0,"connections":61,"proxy":"","difficulty":8853416309.12779999,"testnet":false,"keypoololdest":1399795067,"keypoolsize":101,"unlocked_until":1400519823,"paytxfee":0.00000000,"relayfee":0.00001000,"errors":"This is a pre-release test build - use at your own risk - do not use for mining or merchant applications"},"error":null,"id":1400516286899658573}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			rinfo, err := bitcoindClient.GetInfo()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return", func() {
+				Expect(rinfo).Should(Equal(info{
+					Version:         99900,
+					Protocolversion: 70002,
+					Walletversion:   60000,
+					Balance:         0,
+					Blocks:          301573,
+					Timeoffset:      0,
+					Connections:     61,
+					Proxy:           "",
+					Difficulty:      8.8534163091278e+09,
+					Testnet:         false,
+					Keypoololdest:   1399795067,
+					Paytxfee:        0,
+					Relayfee:        1e-05,
+					Errors:          "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications",
+				}))
+			})
+		})
+	})
+
+	Describe("Testing GetNewAddress", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"1LU69m5ErR3RTKACZA644GqW8gK7ks7khr","error":null,"id":1400517931122112365}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			newAddress, err := bitcoindClient.GetNewAddress()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return string 1LU69m5ErR3RTKACZA644GqW8gK7ks7khr", func() {
+				Expect(newAddress).To(Equal("1LU69m5ErR3RTKACZA644GqW8gK7ks7khr"))
+			})
+		})
+	})
+
+	Describe("Testing GetAddressesByAccount", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":["1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3","164s6WasTY9DruJRKq9SHdRjyj3KTw12aS","1obwJCPP9WvqJEG5QgGM97biLRkcwR55m","1LU69m5ErR3RTKACZA644GqW8gK7ks7khr"],"error":null,"id":1400519905418572586}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			addresses, err := bitcoindClient.GetAddressesByAccount("fakeAccount")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return", func() {
+				Expect(addresses).To(Equal([]string{"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy", "1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3", "164s6WasTY9DruJRKq9SHdRjyj3KTw12aS", "1obwJCPP9WvqJEG5QgGM97biLRkcwR55m", "1LU69m5ErR3RTKACZA644GqW8gK7ks7khr"}))
 			})
 		})
 	})
