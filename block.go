@@ -15,4 +15,5 @@ type block struct {
 	Difficulty        float64  `json:"difficulty"`
 	Chainwork         string   `json:"chainwork"`
 	Previousblockhash string   `json:"previousblockhash"`
+	Nextblockhash     string   `json:"nextblockhash"`
 }
