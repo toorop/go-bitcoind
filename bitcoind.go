@@ -16,7 +16,7 @@ const (
 	RPCCLIENT_TIMEOUT = 30
 )
 
-// A bitpay represents a bitpay client wrapper
+// A Bitcoind represents a Bitcoind client
 type Bitcoind struct {
 	client *rpcClient
 }
