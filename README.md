@@ -7,6 +7,10 @@ A Golang client library wrapping the bitcoind JSON RPC API
 
 Work in progress, stay tuned
 
+Documentation
+-----
+[![GoDoc](https://godoc.org/github.com/Toorop/go-bitcoind?status.png)](https://godoc.org/github.com/Toorop/go-bitcoind)
+
 Donation
 ------
 
