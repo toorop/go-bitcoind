@@ -57,7 +57,7 @@ func (b *bitcoind) GetAccount(address string) (account string, err error) {
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	account = string(r.Result)
+	err = json.Unmarshal(r.Result, &account)
 	return
 }
 
@@ -70,7 +70,7 @@ func (b *bitcoind) GetAccountAddress(account string) (address string, err error)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	address = string(r.Result)
+	err = json.Unmarshal(r.Result, &address)
 	return
 }
 
@@ -92,7 +92,7 @@ func (b *bitcoind) GetBestBlockhash() (bestBlockHash string, err error) {
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	bestBlockHash = string(r.Result)
+	err = json.Unmarshal(r.Result, &bestBlockHash)
 	return
 }
 
@@ -122,7 +122,7 @@ func (b *bitcoind) GetBlockHash(index uint64) (hash string, err error) {
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	hash = string(r.Result)
+	err = json.Unmarshal(r.Result, &hash)
 	return
 }
 
