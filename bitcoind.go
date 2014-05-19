@@ -145,7 +145,7 @@ func (b *bitcoind) GetBlockTemplate(capabilities []string, mode string) (templat
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	fmt.Println(string(r.Result))
+	fmt.Println(json.Unmarshal(r.Result, &template))
 	return
 }
 
@@ -191,7 +191,7 @@ func (b *bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	addr = string(r.Result)
+	err = json.Unmarshal(r.Result, &addr)
 	return
 }
 
