@@ -237,6 +237,7 @@ func (b *Bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 	return
 }
 
+// GetPeerInfo returns data about each connected node
 func (b *Bitcoind) GetPeerInfo() (peerInfo []Peer, err error) {
 	r, err := b.client.call("getpeerinfo", nil)
 	if err = handleError(err, &r); err != nil {
@@ -244,7 +245,63 @@ func (b *Bitcoind) GetPeerInfo() (peerInfo []Peer, err error) {
 	}
 	err = json.Unmarshal(r.Result, &peerInfo)
 	return
+}
 
+// GetRawChangeAddress Returns a new Bitcoin address, for receiving change.
+// This is for use with raw transactions, NOT normal use.
+func (b *Bitcoind) GetRawChangeAddress(account ...string) (rawAddress string, err error) {
+	// 0 or 1 account
+	if len(account) > 1 {
+		err = errors.New("Bad parameters for GetRawChangeAddress: you can set 0 or 1 account")
+		return
+	}
+	r, err := b.client.call("getrawchangeaddress", account)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &rawAddress)
+	return
+}
+
+// GetRawMempool returns all transaction ids in memory pool
+func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
+	r, err := b.client.call("getrawmempool", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txId)
+	return
+}
+
+// GetRawTransaction returns raw transaction representation for given transaction id.
+func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface{}, err error) {
+	r, err := b.client.call("getrawtransaction", []interface{}{txId, verbose})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	if !verbose {
+		err = json.Unmarshal(r.Result, &rawTx)
+	} else {
+		var t RawTx
+		err = json.Unmarshal(r.Result, &t)
+		rawTx = t
+	}
+	return
+}
+
+// GetReceivedByAccount Returns the total amount received by addresses with [account] in
+// transactions with at least [minconf] confirmations. If [account] is set to all return
+// will include all transactions to all accounts
+func (b *Bitcoind) GetReceivedByAccount(account string, minconf uint32) (amount float64, err error) {
+	if account == "all" {
+		account = ""
+	}
+	r, err := b.client.call("getreceivedbyaccount", []interface{}{account, minconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &amount)
+	return
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
