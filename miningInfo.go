@@ -1,9 +1,11 @@
 package bitcoind
 
 type MiningInfo struct {
-	Block            uint64  `json:"block"`
+	// The current block
+	Blocks uint64 `json:"block"`
+	// The last block size
 	CurrentBlocksize uint64  `json:"currentblocksize"`
-	CurrentBlockTx   uint64  `json:"currentblocktx"`
+	CurrentBlockTx   uint64  `json:"currentblocktx"` // The last block transaction
 	Difficulty       float64 `json:"difficulty"`
 	Errors           string  `json:"errors"`
 	GenProcLimit     int32   `json:"genproclimit"`
