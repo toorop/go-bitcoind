@@ -949,7 +949,7 @@ var _ = Describe("Bitcoind", func() {
 			})
 			It("should return", func() {
 				Expect(rinfo).Should(Equal(MiningInfo{
-					Block:            0,
+					Blocks:           301676,
 					CurrentBlocksize: 717621,
 					CurrentBlockTx:   1043,
 					Difficulty:       8.8534163091278e+09,
