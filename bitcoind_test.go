@@ -228,7 +228,7 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 			It("should return", func() {
-				Expect(bestblockhash).Should(Equal(block{
+				Expect(bestblockhash).Should(Equal(Block{
 					Hash:          "00000000000000003f8d1861d035e44d4297c49bd2517dc0a44ad73c7091926c",
 					Confirmations: 503,
 					Size:          348678,
@@ -912,7 +912,7 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 			It("should return", func() {
-				Expect(rinfo).Should(Equal(info{
+				Expect(rinfo).Should(Equal(Info{
 					Version:         99900,
 					Protocolversion: 70002,
 					Walletversion:   60000,
@@ -924,6 +924,8 @@ var _ = Describe("Bitcoind", func() {
 					Difficulty:      8.8534163091278e+09,
 					Testnet:         false,
 					Keypoololdest:   1399795067,
+					KeypoolSize:     101,
+					UnlockedUntil:   1400519823,
 					Paytxfee:        0,
 					Relayfee:        1e-05,
 					Errors:          "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications",

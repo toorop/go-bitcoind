@@ -99,7 +99,7 @@ func (b *Bitcoind) GetBestBlockhash() (bestBlockHash string, err error) {
 }
 
 // GetBlock returns information about the block with the given hash.
-func (b *Bitcoind) GetBlock(blockHash string) (block block, err error) {
+func (b *Bitcoind) GetBlock(blockHash string) (block Block, err error) {
 	r, err := b.client.call("getblock", []string{blockHash})
 	if err = handleError(err, &r); err != nil {
 		return
@@ -193,7 +193,7 @@ func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
 }
 
 // GetInfo return result of "getinfo" command (Amazing !)
-func (b *Bitcoind) GetInfo() (i info, err error) {
+func (b *Bitcoind) GetInfo() (i Info, err error) {
 	r, err := b.client.call("getinfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
