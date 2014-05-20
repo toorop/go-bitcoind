@@ -76,6 +76,16 @@ func (b *Bitcoind) GetAccountAddress(account string) (address string, err error)
 	return
 }
 
+// GetAddressesByAccount return addresses associated with account <account>
+func (b *Bitcoind) GetAddressesByAccount(account string) (addresses []string, err error) {
+	r, err := b.client.call("getaddressesbyaccount", []string{account})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &addresses)
+	return
+}
+
 // GetBalance return the balance of the server or of a specific account
 //If [account] is "", returns the server's total available balance.
 //If [account] is specified, returns the balance in the account
@@ -227,14 +237,14 @@ func (b *Bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 	return
 }
 
-// GetAddressesByAccount return addresses associated with account <account>
-func (b *Bitcoind) GetAddressesByAccount(account string) (addresses []string, err error) {
-	r, err := b.client.call("getaddressesbyaccount", []string{account})
+func (b *Bitcoind) GetPeerInfo() (peerInfo []Peer, err error) {
+	r, err := b.client.call("getpeerinfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	err = json.Unmarshal(r.Result, &addresses)
+	err = json.Unmarshal(r.Result, &peerInfo)
 	return
+
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.

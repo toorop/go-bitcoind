@@ -1010,6 +1010,62 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing GetPeerInfo", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"addr":"37.187.58.89:8333","addrlocal":"92.222.29.108:8333","services":"00000001","lastsend":1400575696,"lastrecv":1400575696,"bytessent":66907113,"bytesrecv":65925257,"conntime":1399838910,"pingtime":0.00000000,"version":70002,"subver":"/Satoshi:0.9.1/","inbound":false,"startingheight":300264,"banscore":0,"syncnode":false},{"addr":"95.85.58.214:8333","addrlocal":"92.222.29.108:8333","services":"00000001","lastsend":1400575696,"lastrecv":1400575691,"bytessent":63076705,"bytesrecv":44013223,"conntime":1399875128,"pingtime":0.00000000,"version":70001,"subver":"/Satoshi:0.8.5/","inbound":false,"startingheight":300327,"banscore":0,"syncnode":false}],"error":null,"id":1400575766321999128}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			peerInfo, err := bitcoindClient.GetPeerInfo()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return", func() {
+				Expect(peerInfo).Should(Equal([]Peer{{
+					Addr:           "37.187.58.89:8333",
+					Addrlocal:      "92.222.29.108:8333",
+					Services:       "00000001",
+					Lastsend:       1400575696,
+					Lastrecv:       1400575696,
+					Bytessent:      66907113,
+					Bytesrecv:      65925257,
+					Conntime:       1399838910,
+					Pingtime:       0,
+					Pingwait:       0,
+					Version:        70002,
+					Subver:         "/Satoshi:0.9.1/",
+					Inbound:        false,
+					Startingheight: 300264,
+					Banscore:       0,
+					Syncnode:       false,
+				},
+					{
+						Addr:           "95.85.58.214:8333",
+						Addrlocal:      "92.222.29.108:8333",
+						Services:       "00000001",
+						Lastsend:       1400575696,
+						Lastrecv:       1400575691,
+						Bytessent:      63076705,
+						Bytesrecv:      44013223,
+						Conntime:       1399875128,
+						Pingtime:       0,
+						Pingwait:       0,
+						Version:        70001,
+						Subver:         "/Satoshi:0.8.5/",
+						Inbound:        false,
+						Startingheight: 300327,
+						Banscore:       0,
+						Syncnode:       false,
+					}}))
+			})
+		})
+	})
+
 	/*Describe("walletpassphrase", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
