@@ -172,6 +172,26 @@ func (b *Bitcoind) GetDifficulty() (difficulty float64, err error) {
 	return
 }
 
+// GetGenerate returns true or false whether bitcoind is currently generating hashes
+func (b *Bitcoind) GetGenerate() (generate bool, err error) {
+	r, err := b.client.call("getgenerate", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &generate)
+	return
+}
+
+// GetHashesPerSec returns a recent hashes per second performance measurement while generating.
+func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
+	r, err := b.client.call("gethashespersec", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &hashpersec)
+	return
+}
+
 // GetInfo return result of "getinfo" command (Amazing !)
 func (b *Bitcoind) GetInfo() (i info, err error) {
 	r, err := b.client.call("getinfo", nil)
@@ -179,6 +199,16 @@ func (b *Bitcoind) GetInfo() (i info, err error) {
 		return
 	}
 	err = json.Unmarshal(r.Result, &i)
+	return
+}
+
+// GetMiningInfo returns an object containing mining-related information
+func (b *Bitcoind) GetMiningInfo() (miningInfo MiningInfo, err error) {
+	r, err := b.client.call("getmininginfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &miningInfo)
 	return
 }
 

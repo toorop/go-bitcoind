@@ -853,6 +853,49 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing GetGenerate", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":false,"error":null,"id":1400564115387666493}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			generate, err := bitcoindClient.GetGenerate()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return bool false", func() {
+				Expect(generate).Should(BeFalse())
+			})
+		})
+	})
+
+	Describe("Testing GetHashesPerSec", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":0,"error":null,"id":1400564491799978781}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			generate, err := bitcoindClient.GetHashesPerSec()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return int 0", func() {
+				Expect(generate).Should(BeNumerically("==", 0))
+			})
+		})
+	})
+
 	Describe("Testing GetInfo", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -884,6 +927,39 @@ var _ = Describe("Bitcoind", func() {
 					Paytxfee:        0,
 					Relayfee:        1e-05,
 					Errors:          "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications",
+				}))
+			})
+		})
+	})
+
+	Describe("Testing GetMiningInfo", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"blocks":301676,"currentblocksize":717621,"currentblocktx":1043,"difficulty":8853416309.12779999,"errors":"This is a pre-release test build - use at your own risk - do not use for mining or merchant applications","genproclimit":-1,"networkhashps":78721394769785312,"pooledtx":1892,"testnet":false,"generate":false,"hashespersec":0},"error":null,"id":1400564915008224057}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			rinfo, err := bitcoindClient.GetMiningInfo()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return", func() {
+				Expect(rinfo).Should(Equal(MiningInfo{
+					Block:            0,
+					CurrentBlocksize: 717621,
+					CurrentBlockTx:   1043,
+					Difficulty:       8.8534163091278e+09,
+					Errors:           "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications",
+					GenProcLimit:     -1,
+					NetworkHashps:    78721394769785312,
+					PooledtTx:        1892,
+					Testnet:          false,
+					Generate:         false,
+					HashesPersec:     0,
 				}))
 			})
 		})
@@ -950,5 +1026,4 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})*/
 
-	//{"result":null,"error":null,"id":1400433627531460562}
 })
