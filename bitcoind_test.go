@@ -1144,7 +1144,7 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 			It("should return RawTX", func() {
-				Expect(txIds).To(Equal(RawTx{
+				Expect(txIds).To(Equal(RawTransaction{
 					Hex:      "01000000018054dfd3011da441f52d237c951bcc89be8c00ac77404c4797f4d8d7884c0cab000000006a473044022032771ee953e3c7809f57179dfb8d58eb4e47fb8721441174325a3e3008c11c8102200b436200ab9d006aab87c8595749da9c03e4490179401de9b5c281cfa5e658c4012103bfde0ae35e6aabc875f937ea708934583aa33f47b5653b12acae191a4ad5ff5effffffff0250690f00000000001976a914e5344f52ecc92c279028a851c9d8ed57bb5dfc6088ac19c51600000000001976a9143399e4655281f5dbb3e157930c724dd3e748a42088ac00000000",
 					Txid:     "00010589f7c108a4fd546df03a17bf485ede3baf52b35ddd5b83e974ec360abf",
 					Version:  1,
@@ -1276,6 +1276,117 @@ var _ = Describe("Bitcoind", func() {
 					},
 					Hex: "0100000001445a669dcbd348cf67608c4569fcc19cd00e9034974fa7532241486ce8e7dbde010000006b483045022100cc82d6200851da906ca7acfbd723abefe7212be219e4356244e114425b3c71a902207decd1eedb2fe9e025249abab202b7efe249006aa19685f0c6317bc01c4c749c01210261bb8d48877f353d13bb376dbe20f736bb74f7c9b351b0b2724f71da7d8a1a35ffffffff0210270000000000001976a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac89220c04000000001976a914b70a330f18a5013c6ac0f3e6cb2d2d0e5ad7649a88ac00000000",
 				}))
+			})
+		})
+	})
+
+	Describe("Testing GetTxOut", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"bestblock":"00000000000000005fc5487bb67b58573eef3ba369972f6acfc5240cf375878f","confirmations":7,"value":0.00010000,"scriptPubKey":{"asm":"OP_DUP OP_HASH160 fc0d1e43cea1c5df928971f8add5d67ce4313003 OP_EQUALVERIFY OP_CHECKSIG","hex":"76a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac","reqSigs":1,"type":"pubkeyhash","addresses":["1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy"]},"version":1,"coinbase":false},"error":null,"id":1400655859011998106}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			uTxOut, err := bitcoindClient.GetTxOut("a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515", 1, false)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return UTransactionOut", func() {
+				Expect(uTxOut).Should(Equal(UTransactionOut{
+					Bestblock:     "00000000000000005fc5487bb67b58573eef3ba369972f6acfc5240cf375878f",
+					Confirmations: 7,
+					Value:         0.0001,
+					ScriptPubKey: ScriptPubKey{
+						Asm:       "OP_DUP OP_HASH160 fc0d1e43cea1c5df928971f8add5d67ce4313003 OP_EQUALVERIFY OP_CHECKSIG",
+						Hex:       "76a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac",
+						ReqSigs:   1,
+						Type:      "pubkeyhash",
+						Addresses: []string{"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy"},
+					},
+					Version:  1,
+					Coinbase: false,
+				}))
+			})
+		})
+	})
+
+	Describe("Testing GetTxOutsetInfo", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"height":301911,"bestblock":"00000000000000000844a8f3d18bc55f08d591fabc4e8d3ac0105e4974538cf2","transactions":3212087,"txouts":11028067,"bytes_serialized":382233349,"hash_serialized":"6aa4a70a010a7ac8e41e335007ee2f7cfb81db2bd1093bc27663aed55e6fc001","total_amount":12797639.79102867},"error":null,"id":1400681203212312585}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			amount, err := bitcoindClient.GetTxOutsetInfo()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return a TransactionOutSet", func() {
+				Expect(amount).Should(Equal(TransactionOutSet{
+					Height:          301911,
+					Bestblock:       "00000000000000000844a8f3d18bc55f08d591fabc4e8d3ac0105e4974538cf2",
+					Transactions:    3.212087e+06,
+					TxOuts:          1.1028067e+07,
+					BytesSerialized: 3.82233349e+08,
+					HashSerialized:  "6aa4a70a010a7ac8e41e335007ee2f7cfb81db2bd1093bc27663aed55e6fc001",
+					TotalAmount:     1.279763979102867e+07,
+				}))
+			})
+		})
+	})
+
+	Describe("Testing GetWork", func() {
+		Context("when success", func() {
+			Context("without data parameter", func() {
+				handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, `{"result":{"midstate":"5e743ccc47f96cb11d2971a3a97c51180e5f1830e23b4f708a3ed074c92c225f","data":"00000002f5cef24cdda03a94bbf39d281641dfa5b0a949c30bf83f6300000000000000004f3f40016ec1623897048811826238d8f66fd4f064a0d8eaff4eb057b337b404537cf83a187c305300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000","hash1":"00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000","target":"00000000000000000000000000000000000000000053307c0000000000000000"},"error":null,"id":1400699018629784233}`)
+				})
+				ts, host, port, err := getNewTestServer(handler)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				defer ts.Close()
+				bitcoindClient, _ := New(host, port, "x", "fake", false)
+				amount, err := bitcoindClient.GetWork()
+				It("should not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+				It("should return a Work ", func() {
+					Expect(amount).Should(Equal(Work{
+						Midstate: "5e743ccc47f96cb11d2971a3a97c51180e5f1830e23b4f708a3ed074c92c225f",
+						Data:     "00000002f5cef24cdda03a94bbf39d281641dfa5b0a949c30bf83f6300000000000000004f3f40016ec1623897048811826238d8f66fd4f064a0d8eaff4eb057b337b404537cf83a187c305300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000",
+						Hash1:    "00000000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000010000",
+						Target:   "00000000000000000000000000000000000000000053307c0000000000000000",
+					}))
+				})
+			})
+			Context("with data parameter", func() {
+				handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					fmt.Fprintln(w, `{"result":false,"error":null,"id":1400699245872721725}`)
+				})
+				ts, host, port, err := getNewTestServer(handler)
+				if err != nil {
+					log.Fatalln(err)
+				}
+				defer ts.Close()
+				bitcoindClient, _ := New(host, port, "x", "fake", false)
+				amount, err := bitcoindClient.GetWork("00000002f5cef24cdda03a94bbf39d281641dfa5b0a949c30bf83f6300000000000000004f3f40016ec1623897048811826238d8f66fd4f064a0d8eaff4eb057b337b404537cf83a187c305300000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000")
+				It("should not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+				It("should return a boolean ", func() {
+					Expect(amount).Should(BeFalse())
+				})
 			})
 		})
 	})

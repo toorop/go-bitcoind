@@ -281,7 +281,7 @@ func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface
 	if !verbose {
 		err = json.Unmarshal(r.Result, &rawTx)
 	} else {
-		var t RawTx
+		var t RawTransaction
 		err = json.Unmarshal(r.Result, &t)
 		rawTx = t
 	}
@@ -324,7 +324,56 @@ func (b *Bitcoind) GetTransaction(txid string) (transaction Transaction, err err
 	}
 	err = json.Unmarshal(r.Result, &transaction)
 	return
+}
 
+// GetTxOut returns details about an unspent transaction output (UTXO)
+func (b *Bitcoind) GetTxOut(txid string, n uint32, includeMempool bool) (transactionOut UTransactionOut, err error) {
+	r, err := b.client.call("gettxout", []interface{}{txid, n, includeMempool})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &transactionOut)
+	return
+}
+
+// GetTxOutsetInfo returns statistics about the unspent transaction output (UTXO) set
+func (b *Bitcoind) GetTxOutsetInfo() (txOutSet TransactionOutSet, err error) {
+	r, err := b.client.call("gettxoutsetinfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txOutSet)
+	return
+}
+
+// GetWork
+// If [data] is not specified, returns formatted hash data to work on
+// If [data] is specified, tries to solve the block and returns true if it was successful.
+func (b *Bitcoind) GetWork(data ...string) (response interface{}, err error) {
+	if len(data) > 1 {
+		err = errors.New("Bad parameters for GetWork: you can set 0 or 1 parameter data")
+		return
+	}
+	var r rpcResponse
+
+	if len(data) == 0 {
+		r, err = b.client.call("getwork", nil)
+		if err = handleError(err, &r); err != nil {
+			return
+		}
+		var work Work
+		err = json.Unmarshal(r.Result, &work)
+		response = work
+	} else {
+		r, err = b.client.call("getwork", data)
+		if err = handleError(err, &r); err != nil {
+			return
+		}
+		var t bool
+		err = json.Unmarshal(r.Result, &t)
+		response = t
+	}
+	return
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
