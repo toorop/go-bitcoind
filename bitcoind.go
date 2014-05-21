@@ -303,6 +303,30 @@ func (b *Bitcoind) GetReceivedByAccount(account string, minconf uint32) (amount 
 	return
 }
 
+// Returns the amount received by <address> in transactions with at least [minconf] confirmations.
+// It correctly handles the case where someone has sent to the address in multiple transactions.
+// Keep in mind that addresses are only ever used for receiving transactions. Works only for addresses
+// in the local wallet, external addresses will always show 0.
+func (b *Bitcoind) GetReceivedByAddress(address string, minconf uint32) (amount float64, err error) {
+	r, err := b.client.call("getreceivedbyaddress", []interface{}{address, minconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &amount)
+	return
+}
+
+// GetTransaction returns a Bitcoind.Transation struct about the given transaction
+func (b *Bitcoind) GetTransaction(txid string) (transaction Transaction, err error) {
+	r, err := b.client.call("gettransaction", []interface{}{txid})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &transaction)
+	return
+
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})

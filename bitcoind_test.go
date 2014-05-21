@@ -1143,7 +1143,7 @@ var _ = Describe("Bitcoind", func() {
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
-			It("should return string", func() {
+			It("should return RawTX", func() {
 				Expect(txIds).To(Equal(RawTx{
 					Hex:      "01000000018054dfd3011da441f52d237c951bcc89be8c00ac77404c4797f4d8d7884c0cab000000006a473044022032771ee953e3c7809f57179dfb8d58eb4e47fb8721441174325a3e3008c11c8102200b436200ab9d006aab87c8595749da9c03e4490179401de9b5c281cfa5e658c4012103bfde0ae35e6aabc875f937ea708934583aa33f47b5653b12acae191a4ad5ff5effffffff0250690f00000000001976a914e5344f52ecc92c279028a851c9d8ed57bb5dfc6088ac19c51600000000001976a9143399e4655281f5dbb3e157930c724dd3e748a42088ac00000000",
 					Txid:     "00010589f7c108a4fd546df03a17bf485ede3baf52b35ddd5b83e974ec360abf",
@@ -1204,13 +1204,78 @@ var _ = Describe("Bitcoind", func() {
 			}
 			defer ts.Close()
 			bitcoindClient, _ := New(host, port, "x", "fake", false)
-			txIds, err := bitcoindClient.GetReceivedByAccount("all", 1)
+			amount, err := bitcoindClient.GetReceivedByAccount("all", 1)
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
 			It("should return float64", func() {
-				Expect(txIds).Should(BeNumerically("==", 0.03330000))
+				Expect(amount).Should(BeNumerically("==", 0.03330000))
+			})
+		})
+	})
+
+	Describe("Testing GetReceivedByAddress", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":0.03330000,"error":null,"id":1400605425098801061}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			amount, err := bitcoindClient.GetReceivedByAddress("1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3", 1)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return float64", func() {
+				Expect(amount).Should(BeNumerically("==", 0.03330000))
+			})
+		})
+	})
+
+	Describe("Testing GetTransaction", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"amount":0.00010000,"confirmations":0,"txid":"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","walletconflicts":[],"time":1400652519,"timereceived":1400652519,"details":[{"account":"tests","address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","category":"receive","amount":0.00010000}],"hex":"0100000001445a669dcbd348cf67608c4569fcc19cd00e9034974fa7532241486ce8e7dbde010000006b483045022100cc82d6200851da906ca7acfbd723abefe7212be219e4356244e114425b3c71a902207decd1eedb2fe9e025249abab202b7efe249006aa19685f0c6317bc01c4c749c01210261bb8d48877f353d13bb376dbe20f736bb74f7c9b351b0b2724f71da7d8a1a35ffffffff0210270000000000001976a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac89220c04000000001976a914b70a330f18a5013c6ac0f3e6cb2d2d0e5ad7649a88ac00000000"},"error":null,"id":1400653137726066857}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			transaction, err := bitcoindClient.GetTransaction("a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return float64", func() {
+				Expect(transaction).Should(Equal(Transaction{
+					Amount:          0.0001,
+					Fee:             0,
+					Confirmations:   0,
+					BlockHash:       "",
+					BlockIndex:      0,
+					BlockTime:       0,
+					TxID:            "a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515",
+					WalletConflicts: []string{},
+					Time:            1400652519,
+					TimeReceived:    1400652519,
+					Details: []TransactionDetails{
+						{
+							Account:  "tests",
+							Address:  "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+							Category: "receive",
+							Amount:   0.0001,
+							Fee:      0,
+						},
+					},
+					Hex: "0100000001445a669dcbd348cf67608c4569fcc19cd00e9034974fa7532241486ce8e7dbde010000006b483045022100cc82d6200851da906ca7acfbd723abefe7212be219e4356244e114425b3c71a902207decd1eedb2fe9e025249abab202b7efe249006aa19685f0c6317bc01c4c749c01210261bb8d48877f353d13bb376dbe20f736bb74f7c9b351b0b2724f71da7d8a1a35ffffffff0210270000000000001976a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac89220c04000000001976a914b70a330f18a5013c6ac0f3e6cb2d2d0e5ad7649a88ac00000000",
+				}))
 			})
 		})
 	})
