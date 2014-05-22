@@ -6,7 +6,7 @@ type ScriptSig struct {
 	Hex string `json:"hex"`
 }
 
-// Vin represent en IN value
+// Vin represent an IN value
 type Vin struct {
 	Coinbase  string    `json:"coinbase"`
 	Txid      string    `json:"txid"`
@@ -23,7 +23,7 @@ type ScriptPubKey struct {
 	Addresses []string `json:"addresses,omitempty"`
 }
 
-// Vin represent en OUT value
+// Vout represent an OUT value
 type Vout struct {
 	Value        float64      `json:"value"`
 	N            int          `json:"n"`
