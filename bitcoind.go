@@ -390,7 +390,16 @@ func (b *Bitcoind) ImportPrivKey(privKey, label string, rescan bool) error {
 func (b *Bitcoind) KeyPoolRefill() error {
 	r, err := b.client.call("keypoolrefill", nil)
 	return handleError(err, &r)
+}
 
+// ListAccounts returns Object that has account names as keys, account balances as values.
+func (b *Bitcoind) ListAccounts() (accounts map[string]float64, err error) {
+	r, err := b.client.call("listaccounts", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &accounts)
+	return
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
