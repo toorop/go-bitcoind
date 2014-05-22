@@ -426,8 +426,8 @@ func (b *Bitcoind) ListAddressGroupings() (list []ListAddressResult, err error) 
 	return
 }
 
-// AccountHasRecieved represents how much coin a account have recieved
-type AccountHasRecieved struct {
+// ReceivedByAccount represents how much coin a account have recieved
+type ReceivedByAccount struct {
 	// the account of the receiving addresses
 	Account string
 	// total amount received by addresses with this account
@@ -437,8 +437,32 @@ type AccountHasRecieved struct {
 }
 
 // ListReceivedByAccount Returns an slice of AccountRecieved:
-func (b *Bitcoind) ListReceivedByAccount(minConf uint32, includeEmpty bool) (list []AccountHasRecieved, err error) {
+func (b *Bitcoind) ListReceivedByAccount(minConf uint32, includeEmpty bool) (list []ReceivedByAccount, err error) {
 	r, err := b.client.call("listreceivedbyaccount", []interface{}{minConf, includeEmpty})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &list)
+	return
+}
+
+// ReceivedByAddress represents how much coin a account have recieved
+type ReceivedByAddress struct {
+	//  receiving address
+	Address string
+	// The corresponding account
+	Account string
+	// total amount received by addresses with this account
+	Amount float64
+	// number of confirmations of the most recent transaction included
+	Confirmations uint32
+	// Tansactions ID
+	TxIds []string
+}
+
+// ListReceivedByAccount Returns an slice of AccountRecieved:
+func (b *Bitcoind) ListReceivedByAddress(minConf uint32, includeEmpty bool) (list []ReceivedByAddress, err error) {
+	r, err := b.client.call("listreceivedbyaddress", []interface{}{minConf, includeEmpty})
 	if err = handleError(err, &r); err != nil {
 		return
 	}

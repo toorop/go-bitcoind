@@ -1506,7 +1506,7 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 			It("should return a boolean ", func() {
-				Expect(txID).Should(Equal([]AccountHasRecieved{
+				Expect(txID).Should(Equal([]ReceivedByAccount{
 					{
 						Account:       "",
 						Amount:        0,
@@ -1515,6 +1515,41 @@ var _ = Describe("Bitcoind", func() {
 						Account:       "tests",
 						Amount:        0.0002,
 						Confirmations: 12,
+					},
+				}))
+			})
+		})
+	})
+
+	Describe("Testing ListReceivedByAddress", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","account":"tests","amount":0.00020000,"confirmations":13,"txids":["a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","eb1c979a968f724f6114c2cce579bd2cac599c154870dae4fdd669319d332346"]},{"address":"1Bvs4PDXKsjPqsfftuXLteDf7bn5PRdyQV","account":"1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3","amount":0.00000000,"confirmations":0,"txids":[]}],"error":null,"id":1400749116266588395}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			txID, err := bitcoindClient.ListReceivedByAddress(1, true)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean ", func() {
+				Expect(txID).Should(Equal([]ReceivedByAddress{
+					{
+						Address:       "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+						Account:       "tests",
+						Amount:        0.00020000,
+						Confirmations: 13,
+						TxIds:         []string{"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515", "eb1c979a968f724f6114c2cce579bd2cac599c154870dae4fdd669319d332346"},
+					}, {
+						Address:       "1Bvs4PDXKsjPqsfftuXLteDf7bn5PRdyQV",
+						Account:       "1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3",
+						Amount:        0,
+						Confirmations: 0,
+						TxIds:         []string{},
 					},
 				}))
 			})
