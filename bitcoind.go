@@ -426,6 +426,26 @@ func (b *Bitcoind) ListAddressGroupings() (list []ListAddressResult, err error) 
 	return
 }
 
+// AccountHasRecieved represents how much coin a account have recieved
+type AccountHasRecieved struct {
+	// the account of the receiving addresses
+	Account string
+	// total amount received by addresses with this account
+	Amount float64
+	// number of confirmations of the most recent transaction included
+	Confirmations uint32
+}
+
+// ListReceivedByAccount Returns an slice of AccountRecieved:
+func (b *Bitcoind) ListReceivedByAccount(minConf uint32, includeEmpty bool) (list []AccountHasRecieved, err error) {
+	r, err := b.client.call("listreceivedbyaccount", []interface{}{minConf, includeEmpty})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &list)
+	return
+}
+
 // SendFrom send amount from fromAccount to toAddress
 //  amount is a real and is rounded to 8 decimal places.
 //  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.

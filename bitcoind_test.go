@@ -1490,6 +1490,37 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing ListReceivedByAccount", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"account":"","amount":0.00000000,"confirmations":0},{"account":"tests","amount":0.00020000,"confirmations":12}],"error":null,"id":1400747404600680330}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			txID, err := bitcoindClient.ListReceivedByAccount(1, true)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean ", func() {
+				Expect(txID).Should(Equal([]AccountHasRecieved{
+					{
+						Account:       "",
+						Amount:        0,
+						Confirmations: 0,
+					}, {
+						Account:       "tests",
+						Amount:        0.0002,
+						Confirmations: 12,
+					},
+				}))
+			})
+		})
+	})
+
 	Describe("Testing SendFrom", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
