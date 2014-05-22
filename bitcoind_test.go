@@ -1391,6 +1391,24 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testting ImportPrivKey", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1400733431937435587}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.ImportPrivKey("fakeprivkey", "imported from mars", true)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
 	/*Describe("walletpassphrase", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

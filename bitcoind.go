@@ -376,6 +376,16 @@ func (b *Bitcoind) GetWork(data ...string) (response interface{}, err error) {
 	return
 }
 
+// ImportPrivKey Adds a private key (as returned by dumpprivkey) to your wallet.
+// This may take a while, as a rescan is done, looking for existing transactions.
+// Optional [rescan] parameter added in 0.8.0.
+// Note: There's no need to import public key, as in ECDSA (unlike RSA) this
+// can be computed from private key.
+func (b *Bitcoind) ImportPrivKey(privKey, label string, rescan bool) error {
+	r, err := b.client.call("importprivkey", []interface{}{privKey, label, rescan})
+	return handleError(err, &r)
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})
