@@ -1253,9 +1253,12 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 
-			It("should return float64", func() {
+			It("should return Transaction", func() {
 				Expect(transaction).Should(Equal(Transaction{
 					Amount:          0.0001,
+					Account:         "",
+					Address:         "",
+					Category:        "",
 					Fee:             0,
 					Confirmations:   0,
 					BlockHash:       "",
@@ -1505,7 +1508,7 @@ var _ = Describe("Bitcoind", func() {
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
-			It("should return a boolean ", func() {
+			It("should return a slice of ReceivedByAccount ", func() {
 				Expect(txID).Should(Equal([]ReceivedByAccount{
 					{
 						Account:       "",
@@ -1536,7 +1539,7 @@ var _ = Describe("Bitcoind", func() {
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
-			It("should return a boolean ", func() {
+			It("should return a slice of ReceivedByAddress ", func() {
 				Expect(txID).Should(Equal([]ReceivedByAddress{
 					{
 						Address:       "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
@@ -1550,6 +1553,118 @@ var _ = Describe("Bitcoind", func() {
 						Amount:        0,
 						Confirmations: 0,
 						TxIds:         []string{},
+					},
+				}))
+			})
+		})
+	})
+
+	Describe("Testing ListSinceBlock", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"transactions":[{"account":"test2","address":"1Bwq28f3eE1Aa3eKsc9ma2o7KX8S6PnHTK","category":"receive","amount":0.00020000,"confirmations":23,"blockhash":"0000000000000000269eadc1d50b15cd752b37e00b227d2d86e3466acf65c579","blockindex":237,"blocktime":1400736496,"txid":"284e518c9b02bfce907bd2d25647358db7238f96d530bbd6eff83e438360d665","walletconflicts":[],"time":1400735561,"timereceived":1400735561},{"account":"test2","address":"114fREEjA8XZUypygprUSbrynsUrr4TKjz","category":"receive","amount":0.00010000,"confirmations":18,"blockhash":"000000000000000015b1224f8512331a4407aa44fdd969ac592cea41e7212083","blockindex":57,"blocktime":1400739914,"txid":"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5","walletconflicts":[],"time":1400739890,"timereceived":1400739890}],"lastblock":"00000000000000005ec70ef0ff08a100df533c99c197d4b2d7fa7cbad102e3b5"},"error":null,"id":1400750578225727392}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			transactions, err := bitcoindClient.ListSinceBlock("00000000000000003f8d1861d035e44d4297c49bd2517dc0a44ad73c7091926c", 1)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("sould return a slice of Transaction", func() {
+				Expect(transactions).Should(Equal([]Transaction{
+					{
+						Amount:          0.0002,
+						Account:         "test2",
+						Address:         "1Bwq28f3eE1Aa3eKsc9ma2o7KX8S6PnHTK",
+						Category:        "receive",
+						Fee:             0,
+						Confirmations:   23,
+						BlockHash:       "0000000000000000269eadc1d50b15cd752b37e00b227d2d86e3466acf65c579",
+						BlockIndex:      237,
+						BlockTime:       1400736496,
+						TxID:            "284e518c9b02bfce907bd2d25647358db7238f96d530bbd6eff83e438360d665",
+						WalletConflicts: []string{},
+						Time:            1400735561,
+						TimeReceived:    1400735561,
+						Details:         nil,
+						Hex:             "",
+					},
+					{
+						Amount:          0.0001,
+						Account:         "test2",
+						Address:         "114fREEjA8XZUypygprUSbrynsUrr4TKjz",
+						Category:        "receive",
+						Fee:             0,
+						Confirmations:   18,
+						BlockHash:       "000000000000000015b1224f8512331a4407aa44fdd969ac592cea41e7212083",
+						BlockIndex:      57,
+						BlockTime:       1400739914,
+						TxID:            "61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5",
+						WalletConflicts: []string{},
+						Time:            1400739890,
+						TimeReceived:    1400739890,
+						Details:         nil,
+						Hex:             "",
+					},
+				}))
+			})
+		})
+	})
+
+	Describe("Testing ListTransactions", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"account":"tests","address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","category":"receive","amount":0.00010000,"confirmations":252,"blockhash":"00000000000000006cff6938c9f456630ad39e5636b1e7b9d96bf935cc83d4dd","blockindex":205,"blocktime":1400652337,"txid":"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","walletconflicts":[],"time":1400652519,"timereceived":1400652519},{"account":"tests","address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","category":"receive","amount":0.00010000,"confirmations":75,"blockhash":"000000000000000023a7dd3e1f3cc3424e6f20cfc6c17694cf909c4f27ca2e5c","blockindex":101,"blocktime":1400740353,"txid":"eb1c979a968f724f6114c2cce579bd2cac599c154870dae4fdd669319d332346","walletconflicts":[],"time":1400740164,"timereceived":1400740164}],"error":null,"id":1400776947078883993}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			transactions, err := bitcoindClient.ListTransactions("tests", 10, 0)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a slice of transactions", func() {
+				Expect(transactions).Should(Equal([]Transaction{
+					{
+						Amount:          0.0001,
+						Account:         "tests",
+						Address:         "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+						Category:        "receive",
+						Fee:             0,
+						Confirmations:   252,
+						BlockHash:       "00000000000000006cff6938c9f456630ad39e5636b1e7b9d96bf935cc83d4dd",
+						BlockIndex:      205,
+						BlockTime:       1400652337,
+						TxID:            "a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515",
+						WalletConflicts: []string{},
+						Time:            1400652519,
+						TimeReceived:    1400652519,
+						Details:         nil,
+						Hex:             "",
+					},
+					{
+						Amount:          0.0001,
+						Account:         "tests",
+						Address:         "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+						Category:        "receive",
+						Fee:             0,
+						Confirmations:   75,
+						BlockHash:       "000000000000000023a7dd3e1f3cc3424e6f20cfc6c17694cf909c4f27ca2e5c",
+						BlockIndex:      101,
+						BlockTime:       1400740353,
+						TxID:            "eb1c979a968f724f6114c2cce579bd2cac599c154870dae4fdd669319d332346",
+						WalletConflicts: []string{},
+						Time:            1400740164,
+						TimeReceived:    1400740164,
+						Details:         nil,
+						Hex:             "",
 					},
 				}))
 			})
@@ -1571,7 +1686,7 @@ var _ = Describe("Bitcoind", func() {
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
-			It("should return a boolean ", func() {
+			It("should return a transaction ID ", func() {
 				Expect(txID).Should(Equal("6174ffcb4eb0c2c94a17f427a094c15b3d341c32a2a674f12932e59476836e4c"))
 			})
 		})

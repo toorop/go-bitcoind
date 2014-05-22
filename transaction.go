@@ -56,6 +56,9 @@ type TransactionDetails struct {
 // Transaction represents a transaction
 type Transaction struct {
 	Amount          float64              `json:"amount"`
+	Account         string               `json:"account,omitempty"`
+	Address         string               `json:"address,omitempty"`
+	Category        string               `json:"category,omitempty"`
 	Fee             float64              `json:"fee,omitempty"`
 	Confirmations   int64                `json:"confirmations"`
 	BlockHash       string               `json:"blockhash"`
@@ -65,8 +68,8 @@ type Transaction struct {
 	WalletConflicts []string             `json:"walletconflicts"`
 	Time            int64                `json:"time"`
 	TimeReceived    int64                `json:"timereceived"`
-	Details         []TransactionDetails `json:"details"`
-	Hex             string               `json:"hex"`
+	Details         []TransactionDetails `json:"details,omitempty"`
+	Hex             string               `json:"hex,omitempty"`
 }
 
 // UTransactionOut represents a unspent transaction out (UTXO)

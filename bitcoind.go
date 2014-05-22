@@ -470,6 +470,36 @@ func (b *Bitcoind) ListReceivedByAddress(minConf uint32, includeEmpty bool) (lis
 	return
 }
 
+// ListSinceBlock
+func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32) (list []Transaction, err error) {
+	r, err := b.client.call("listsinceblock", []interface{}{blockHash, targetConfirmations})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	type ts struct {
+		Transactions []Transaction
+	}
+	var result ts
+	if err = json.Unmarshal(r.Result, &result); err != nil {
+		return
+	}
+	list = result.Transactions
+	return
+}
+
+// ListTransactions returns up to [count] most recent transactions skipping the first
+// [from] transactions for account [account]. If [account] not provided it'll return
+// recent transactions from all accounts.
+func (b *Bitcoind) ListTransactions(account string, count, from uint32) (list []Transaction, err error) {
+	r, err := b.client.call("listtransactions", []interface{}{account, count, from})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	fmt.Println(string(r.Result))
+	err = json.Unmarshal(r.Result, &list)
+	return
+}
+
 // SendFrom send amount from fromAccount to toAddress
 //  amount is a real and is rounded to 8 decimal places.
 //  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
@@ -481,7 +511,6 @@ func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minco
 	//txID = r.Result
 	err = json.Unmarshal(r.Result, &txID)
 	return
-
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
