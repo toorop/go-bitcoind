@@ -393,13 +393,51 @@ func (b *Bitcoind) KeyPoolRefill() error {
 }
 
 // ListAccounts returns Object that has account names as keys, account balances as values.
-func (b *Bitcoind) ListAccounts() (accounts map[string]float64, err error) {
-	r, err := b.client.call("listaccounts", nil)
+func (b *Bitcoind) ListAccounts(minconf int32) (accounts map[string]float64, err error) {
+	r, err := b.client.call("listaccounts", []int32{minconf})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
 	err = json.Unmarshal(r.Result, &accounts)
 	return
+}
+
+// ListAddressResult represents a result composing ListAddressGroupings slice reply
+type ListAddressResult struct {
+	Address string
+	Amount  float64
+	Account string
+}
+
+// ListAddressGroupings returns all addresses in the wallet and info used for coincontrol.
+func (b *Bitcoind) ListAddressGroupings() (list []ListAddressResult, err error) {
+	r, err := b.client.call("listaddressgroupings", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	// hum.....
+	var t [][][]interface{}
+	err = json.Unmarshal(r.Result, &t)
+	for _, tt := range t {
+		for _, ttt := range tt {
+			list = append(list, ListAddressResult{ttt[0].(string), ttt[1].(float64), ttt[2].(string)})
+		}
+	}
+	return
+}
+
+// SendFrom send amount from fromAccount to toAddress
+//  amount is a real and is rounded to 8 decimal places.
+//  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
+func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minconf int32, comment, commentTo string) (txID string, err error) {
+	r, err := b.client.call("sendfrom", []interface{}{fromAccount, toAddress, amount, minconf, comment, commentTo})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	//txID = r.Result
+	err = json.Unmarshal(r.Result, &txID)
+	return
+
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.

@@ -1438,19 +1438,75 @@ var _ = Describe("Bitcoind", func() {
 			}
 			defer ts.Close()
 			bitcoindClient, _ := New(host, port, "x", "fake", false)
-			accounts, err := bitcoindClient.ListAccounts()
+			accounts, err := bitcoindClient.ListAccounts(4)
 			It("should not error", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 			It("shoul be a map", func() {
 				eAccounts := make(map[string]float64)
-
 				eAccounts[""] = 0
 				eAccounts["1KU5DX7jKECLxh1nYhmQ7CahY7GMNMVLP3"] = 0
 				eAccounts["imported from space"] = 0
 				eAccounts["tests"] = 0.0001
 				Expect(accounts).Should(Equal(eAccounts))
+			})
+		})
+	})
 
+	Describe("Testing ListAddressGroupings", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[[["1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",0.00020000,"tests"]],[["114fREEjA8XZUypygprUSbrynsUrr4TKjz",0.00010000,"test2"]],[["1Bwq28f3eE1Aa3eKsc9ma2o7KX8S6PnHTK",0.00000000,"test2"]]],"error":null,"id":1400745792215318692}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			list, err := bitcoindClient.ListAddressGroupings()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean ", func() {
+				Expect(list).Should(Equal([]ListAddressResult{
+					{
+						Address: "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+						Amount:  0.0002,
+						Account: "tests",
+					},
+					{
+						Address: "114fREEjA8XZUypygprUSbrynsUrr4TKjz",
+						Amount:  0.0001,
+						Account: "test2",
+					},
+					{
+						Address: "1Bwq28f3eE1Aa3eKsc9ma2o7KX8S6PnHTK",
+						Amount:  0,
+						Account: "test2",
+					},
+				}))
+			})
+		})
+	})
+
+	Describe("Testing SendFrom", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"6174ffcb4eb0c2c94a17f427a094c15b3d341c32a2a674f12932e59476836e4c","error":null,"id":1400741637545204266}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			txID, err := bitcoindClient.SendFrom("fakeAccount", "1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB", 0.0001, 1, "Comment", "CommentTo")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean ", func() {
+				Expect(txID).Should(Equal("6174ffcb4eb0c2c94a17f427a094c15b3d341c32a2a674f12932e59476836e4c"))
 			})
 		})
 	})
