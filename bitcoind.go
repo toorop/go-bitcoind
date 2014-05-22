@@ -386,6 +386,13 @@ func (b *Bitcoind) ImportPrivKey(privKey, label string, rescan bool) error {
 	return handleError(err, &r)
 }
 
+// KeyPoolRefill fills the keypool, requires wallet passphrase to be set.
+func (b *Bitcoind) KeyPoolRefill() error {
+	r, err := b.client.call("keypoolrefill", nil)
+	return handleError(err, &r)
+
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})
