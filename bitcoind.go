@@ -471,7 +471,7 @@ func (b *Bitcoind) ListReceivedByAddress(minConf uint32, includeEmpty bool) (lis
 }
 
 // ListSinceBlock
-func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32) (list []Transaction, err error) {
+func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32) (transaction []Transaction, err error) {
 	r, err := b.client.call("listsinceblock", []interface{}{blockHash, targetConfirmations})
 	if err = handleError(err, &r); err != nil {
 		return
@@ -483,32 +483,69 @@ func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32) 
 	if err = json.Unmarshal(r.Result, &result); err != nil {
 		return
 	}
-	list = result.Transactions
+	transaction = result.Transactions
 	return
 }
 
 // ListTransactions returns up to [count] most recent transactions skipping the first
 // [from] transactions for account [account]. If [account] not provided it'll return
 // recent transactions from all accounts.
-func (b *Bitcoind) ListTransactions(account string, count, from uint32) (list []Transaction, err error) {
+func (b *Bitcoind) ListTransactions(account string, count, from uint32) (transaction []Transaction, err error) {
 	r, err := b.client.call("listtransactions", []interface{}{account, count, from})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	fmt.Println(string(r.Result))
-	err = json.Unmarshal(r.Result, &list)
+	err = json.Unmarshal(r.Result, &transaction)
+	return
+}
+
+// ListUnspent returns array of unspent transaction inputs in the wallet.
+func (b *Bitcoind) ListUnspent(minconf, maxconf uint32) (transactions []Transaction, err error) {
+	if maxconf > 999999 {
+		maxconf = 999999
+	}
+	r, err := b.client.call("listunspent", []interface{}{minconf, maxconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &transactions)
+	return
+}
+
+// UnspendableOutput represents a unspendable (locked) output
+type UnspendableOutput struct {
+	TxId string `json:"txid"`
+	Vout uint64 `json:"vout"`
+}
+
+// ListLockUnspent returns list of temporarily unspendable outputs
+func (b *Bitcoind) ListLockUnspent() (unspendableOutputs []UnspendableOutput, err error) {
+	r, err := b.client.call("listlockunspent", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &unspendableOutputs)
+	return
+}
+
+// LockUnspent updates(lock/unlock) list of temporarily unspendable outputs
+func (b *Bitcoind) LockUnspent(lock bool, outputs []UnspendableOutput) (success bool, err error) {
+	r, err := b.client.call("lockunspent", []interface{}{lock, outputs})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &success)
 	return
 }
 
 // SendFrom send amount from fromAccount to toAddress
 //  amount is a real and is rounded to 8 decimal places.
 //  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
-func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minconf int32, comment, commentTo string) (txID string, err error) {
+func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minconf uint32, comment, commentTo string) (txID string, err error) {
 	r, err := b.client.call("sendfrom", []interface{}{fromAccount, toAddress, amount, minconf, comment, commentTo})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	//txID = r.Result
 	err = json.Unmarshal(r.Result, &txID)
 	return
 }

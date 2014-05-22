@@ -1671,6 +1671,113 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing ListUnspent", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"txid":"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5","vout":0,"address":"114fREEjA8XZUypygprUSbrynsUrr4TKjz","account":"test2","scriptPubKey":"76a91400b1514072197bb18a3c914ed8e67fa80e3f713d88ac","amount":0.00010000,"confirmations":78},{"txid":"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","vout":0,"address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","account":"tests","scriptPubKey":"76a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac","amount":0.00010000,"confirmations":253}],"error":null,"id":1400778484990055255}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			transactions, err := bitcoindClient.ListUnspent(1, 9999)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a transaction ID ", func() {
+				Expect(transactions).Should(Equal([]Transaction{
+					{
+						Amount:          0.0001,
+						Account:         "test2",
+						Address:         "114fREEjA8XZUypygprUSbrynsUrr4TKjz",
+						Category:        "",
+						Fee:             0,
+						Confirmations:   78,
+						BlockHash:       "",
+						BlockIndex:      0,
+						BlockTime:       0,
+						TxID:            "61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5",
+						WalletConflicts: nil,
+						Time:            0,
+						TimeReceived:    0,
+						Details:         nil,
+						Hex:             "",
+					},
+					{
+						Amount:          0.0001,
+						Account:         "tests",
+						Address:         "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+						Category:        "",
+						Fee:             0,
+						Confirmations:   253,
+						BlockHash:       "",
+						BlockIndex:      0,
+						BlockTime:       0,
+						TxID:            "a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515",
+						WalletConflicts: nil,
+						Time:            0,
+						TimeReceived:    0,
+						Details:         nil,
+						Hex:             "",
+					},
+				}))
+			})
+		})
+	})
+
+	Describe("Testing LockUnspent", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":true,"error":null,"id":1400781494667270486}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			success, err := bitcoindClient.LockUnspent(false, []UnspendableOutput{{"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5", 0}, {"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515", 0}})
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean true ", func() {
+				Expect(success).Should(BeTrue())
+			})
+		})
+	})
+
+	Describe("Testing ListLockUnspent", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":[{"txid":"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5","vout":1},{"txid":"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","vout":1}],"error":null,"id":1400781494716917978}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			success, err := bitcoindClient.ListLockUnspent()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a slice of UnspendableOutput", func() {
+				Expect(success).Should(Equal([]UnspendableOutput{
+					{
+						TxId: "61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5",
+						Vout: 1,
+					},
+					{
+						TxId: "a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515",
+						Vout: 1,
+					},
+				}))
+			})
+		})
+	})
+
 	Describe("Testing SendFrom", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
