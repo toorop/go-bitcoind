@@ -1778,6 +1778,27 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing Move", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":true,"error":null,"id":1400824961400921439}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			success, err := bitcoindClient.Move("tests1", "test2", 0.0001, 1, "Move test")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a boolean true ", func() {
+				Expect(success).Should(BeTrue())
+			})
+		})
+	})
+
 	Describe("Testing SendFrom", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

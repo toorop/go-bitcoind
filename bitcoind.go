@@ -538,6 +538,17 @@ func (b *Bitcoind) LockUnspent(lock bool, outputs []UnspendableOutput) (success 
 	return
 }
 
+// Move from one account in your wallet to another
+func (b *Bitcoind) Move(formAccount, toAccount string, amount float64, minconf uint32, comment string) (success bool, err error) {
+	r, err := b.client.call("move", []interface{}{formAccount, toAccount, amount, minconf, comment})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &success)
+	return
+
+}
+
 // SendFrom send amount from fromAccount to toAddress
 //  amount is a real and is rounded to 8 decimal places.
 //  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
