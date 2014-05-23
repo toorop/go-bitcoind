@@ -561,6 +561,26 @@ func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minco
 	return
 }
 
+// SenMany send multiple times
+func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minconf uint32, comment string) (txID string, err error) {
+	r, err := b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf, comment})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txID)
+	return
+}
+
+// SendToAddress send an amount to a given address
+func (b *Bitcoind) SendToAddress(toAddress string, amount float64, comment, commentTo string) (txID string, err error) {
+	r, err := b.client.call("sendtoaddress", []interface{}{toAddress, amount, comment, commentTo})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txID)
+	return
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})

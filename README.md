@@ -1,4 +1,4 @@
-go-bitcoind
+bitcoind
 ===========
 [![Build Status](https://travis-ci.org/Toorop/go-bitcoind.svg)](https://travis-ci.org/Toorop/go-bitcoind)
 
@@ -10,6 +10,23 @@ Work in progress, stay tuned
 Documentation
 -----
 [![GoDoc](https://godoc.org/github.com/Toorop/go-bitcoind?status.png)](https://godoc.org/github.com/Toorop/go-bitcoind)
+
+Todo
+-----
+* https
+* GetBlockTemplate
+* sendrawtransaction
+* signrawtransaction
+* setaccount
+* setgenerate
+* settxfee
+* signmessage
+* stop
+* submitblock
+* validateaddress
+* verifymessage
+* walletlock
+* walletpassphrasechange
 
 Donation
 ------

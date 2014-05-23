@@ -1820,6 +1820,54 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing SendMany", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"ddb9d58a175de0173d6f2d16c5159f3bc747baf3c1af5926d916b185da5b6882","error":null,"id":1400852951961136429}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			amounts := make(map[string]float64)
+			amounts["1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB"] = 0.0001
+			amounts["1Ldfez73eanxUZhudrS62BXqk8BrLxYQFj"] = 0.0001
+			txID, err := bitcoindClient.SendMany("tests", amounts, 1, "test sendMany")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a transaction ID ", func() {
+				Expect(txID).Should(Equal("ddb9d58a175de0173d6f2d16c5159f3bc747baf3c1af5926d916b185da5b6882"))
+			})
+		})
+	})
+
+	Describe("Testing SendToAddress", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"72cb80e576096d4ea36d7a11df9844c4e416dc45a3701f0592ab1a015780923b","error":null,"id":1400868678615467745}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			amounts := make(map[string]float64)
+			amounts["1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB"] = 0.0001
+			amounts["1Ldfez73eanxUZhudrS62BXqk8BrLxYQFj"] = 0.0001
+			txID, err := bitcoindClient.SendToAddress("1Ldfez73eanxUZhudrS62BXqk8BrLxYQFj", 0.0001, "send to address test", "send to cx")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a transaction ID ", func() {
+				Expect(txID).Should(Equal("72cb80e576096d4ea36d7a11df9844c4e416dc45a3701f0592ab1a015780923b"))
+			})
+		})
+	})
+
 	/*Describe("walletpassphrase", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
