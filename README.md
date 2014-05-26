@@ -53,7 +53,11 @@ Mores examples in example.go (in examples folder)
 
 Documentation
 -----
+Click on the button below to access the full documentation:
+
 [![GoDoc](https://godoc.org/github.com/Toorop/go-bitcoind?status.png)](https://godoc.org/github.com/Toorop/go-bitcoind)	
+
+
 
 Unit tests
 ----
@@ -80,13 +84,19 @@ To run tests:
 	Test Suite Passed
  
 
+
+
 Todo
 -----
-* https
 * GetBlockTemplate
 * sendrawtransaction
 * signrawtransaction
 * submitblock
+
+#####Note on SSL support 
+
+Note on ssl support : bitcoind library doesn't verify the server's certificate chain. That means that it accepts any certificate presented by the server and any host name in that certificate. In this mode, TLS is susceptible to man-in-the-middle attacks.
+
 
 Donation
 ------

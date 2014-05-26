@@ -2,12 +2,12 @@ package bitcoind
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	//"strings"
 	"time"
 )
 
@@ -45,12 +45,18 @@ func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcC
 		return
 	}
 	var serverAddr string
+	var httpClient *http.Client
 	if useSSL {
 		serverAddr = "https://"
+		t := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		httpClient = &http.Client{Transport: t}
 	} else {
 		serverAddr = "http://"
+		httpClient = &http.Client{}
 	}
-	c = &rpcClient{serverAddr: fmt.Sprintf("%s%s:%d", serverAddr, host, port), user: user, passwd: passwd, httpClient: &http.Client{}}
+	c = &rpcClient{serverAddr: fmt.Sprintf("%s%s:%d", serverAddr, host, port), user: user, passwd: passwd, httpClient: httpClient}
 	return
 }
 
