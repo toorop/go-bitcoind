@@ -17,7 +17,6 @@ Todo
 * GetBlockTemplate
 * sendrawtransaction
 * signrawtransaction
-* setaccount
 * setgenerate
 * settxfee
 * signmessage

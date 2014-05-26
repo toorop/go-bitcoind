@@ -581,6 +581,13 @@ func (b *Bitcoind) SendToAddress(toAddress string, amount float64, comment, comm
 	return
 }
 
+// SetAccount sets the account associated with the given address
+func (b *Bitcoind) SetAccount(address, account string) error {
+	r, err := b.client.call("setaccount", []interface{}{address, account})
+	return handleError(err, &r)
+
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})
