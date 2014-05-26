@@ -108,10 +108,9 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 		return
 	}
 	if resp.StatusCode != 200 {
-		err = errors.New(resp.Status)
+		err = errors.New("HTTP error: " + resp.Status)
+		return
 	}
-
 	err = json.Unmarshal(data, &rr)
-
 	return
 }

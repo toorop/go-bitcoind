@@ -594,8 +594,74 @@ func (b *Bitcoind) SetGenerate(generate bool, genProcLimit int32) error {
 	return handleError(err, &r)
 }
 
+// SetTxFee set the transaction fee per kB
+func (b *Bitcoind) SetTxFee(amount float64) error {
+	r, err := b.client.call("settxfee", []interface{}{amount})
+	return handleError(err, &r)
+}
+
+// Stop stop bitcoin server.
+func (b *Bitcoind) Stop() error {
+	r, err := b.client.call("stop", nil)
+	return handleError(err, &r)
+}
+
+// SignMessage sign a message with the private key of an address
+func (b *Bitcoind) SignMessage(address, message string) (sig string, err error) {
+	r, err := b.client.call("signmessage", []interface{}{address, message})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &sig)
+	return
+}
+
+// Verifymessage Verify a signed message.
+func (b *Bitcoind) VerifyMessage(address, sign, message string) (success bool, err error) {
+	r, err := b.client.call("verifymessage", []interface{}{address, sign, message})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &success)
+	return
+}
+
+// ValidateAddressResponse represents a response to "validateaddress" call
+type ValidateAddressResponse struct {
+	IsValid      bool   `json:"isvalid"`
+	Address      string `json:"address"`
+	IsMine       bool   `json:"ismine"`
+	IsScript     bool   `json:"isscript"`
+	PubKey       string `json:"pubkey"`
+	IsCompressed bool   `json:"iscompressed"`
+	Account      string `json:"account"`
+}
+
+// ValidateAddress return information about <bitcoinaddress>.
+func (b *Bitcoind) ValidateAddress(address string) (va ValidateAddressResponse, err error) {
+	r, err := b.client.call("validateaddress", []interface{}{address})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &va)
+	return
+}
+
+// WalletLock Removes the wallet encryption key from memory, locking the wallet.
+// After calling this method, you will need to call walletpassphrase again before being
+// able to call any methods which require the wallet to be unlocked.
+func (b *Bitcoind) WalletLock() error {
+	r, err := b.client.call("walletlock", nil)
+	return handleError(err, &r)
+}
+
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.
 func (b *Bitcoind) WalletPassphrase(passPhrase string, timeout uint64) error {
 	r, err := b.client.call("walletpassphrase", []interface{}{passPhrase, timeout})
+	return handleError(err, &r)
+}
+
+func (b *Bitcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) error {
+	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
 }

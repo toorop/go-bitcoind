@@ -1904,7 +1904,132 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
-	/*Describe("walletpassphrase", func() {
+	Describe("Testing SetTxFee", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":true,"error":null,"id":1401115696421261167}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.SetTxFee(0.0001)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("Testing SignMessage", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"ILImxcrK6iELcUSqH9ntxGYrpd9MuYwx0rXnLHron1NEG9Jog36RbFCQzaRSO0/XXu6msoWiz4n1Q64kCNv4nH8=","error":null,"id":1401117539316610969}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			sig, err := bitcoindClient.SignMessage("1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy", "test message")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a string sig ", func() {
+				Expect(sig).Should(Equal("ILImxcrK6iELcUSqH9ntxGYrpd9MuYwx0rXnLHron1NEG9Jog36RbFCQzaRSO0/XXu6msoWiz4n1Q64kCNv4nH8="))
+			})
+		})
+	})
+
+	Describe("Testing Stop", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":"Bitcoin server stopping","error":null,"id":1401118273551801323}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.Stop()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("Testing ValidateAddress", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"isvalid":true,"address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","ismine":true,"isscript":false,"pubkey":"02dc7ecd8baec59cf018bf40d1e948519dc0dcf256eb3bc3ed121bc3ee83c98b01","iscompressed":true,"account":"tests"},"error":null,"id":1401119296578850111}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			resp, err := bitcoindClient.ValidateAddress("1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return a string sig ", func() {
+				Expect(resp).Should(Equal(ValidateAddressResponse{
+					IsValid:      true,
+					Address:      "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+					IsMine:       true,
+					IsScript:     false,
+					PubKey:       "02dc7ecd8baec59cf018bf40d1e948519dc0dcf256eb3bc3ed121bc3ee83c98b01",
+					IsCompressed: true,
+					Account:      "tests",
+				}))
+			})
+		})
+	})
+
+	Describe("Testing VerifyMessage", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":true,"error":null,"id":1401117539369759914}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			success, err := bitcoindClient.VerifyMessage("1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy", "fake_sig", "test message")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("succes should be true", func() {
+				Expect(success).To(BeTrue())
+			})
+		})
+	})
+
+	Describe("Testing WalletLock", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1401119933934255494}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.WalletLock()
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	Describe("walletpassphrase", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintln(w, `{"result":null,"error":null,"id":1400433627531460562}`)
@@ -1920,5 +2045,25 @@ var _ = Describe("Bitcoind", func() {
 				Expect(err).NotTo(HaveOccurred())
 			})
 		})
-	})*/
+	})
+
+	Describe("Testing WalletPassphraseChange", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1401120599336429525}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.WalletPassphraseChange("fakePassPhrase", "fake passphrase")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
+	// {"result":null,"error":null,"id":1401120599336429525}
 })
