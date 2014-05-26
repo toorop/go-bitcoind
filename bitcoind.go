@@ -585,7 +585,13 @@ func (b *Bitcoind) SendToAddress(toAddress string, amount float64, comment, comm
 func (b *Bitcoind) SetAccount(address, account string) error {
 	r, err := b.client.call("setaccount", []interface{}{address, account})
 	return handleError(err, &r)
+}
 
+// SetGenerate turns generation on or off.
+// Generation is limited to [genproclimit] processors, -1 is unlimited.
+func (b *Bitcoind) SetGenerate(generate bool, genProcLimit int32) error {
+	r, err := b.client.call("setgenerate", []interface{}{generate, genProcLimit})
+	return handleError(err, &r)
 }
 
 // walletPassphrase stores the wallet decryption key in memory for <timeout> seconds.

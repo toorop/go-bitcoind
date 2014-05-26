@@ -1886,6 +1886,24 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing SetGenerate", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":null,"error":null,"id":1401085240686123320}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			err = bitcoindClient.SetGenerate(true, 1)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+		})
+	})
+
 	/*Describe("walletpassphrase", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

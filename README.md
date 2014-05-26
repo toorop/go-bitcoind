@@ -17,7 +17,6 @@ Todo
 * GetBlockTemplate
 * sendrawtransaction
 * signrawtransaction
-* setgenerate
 * settxfee
 * signmessage
 * stop
