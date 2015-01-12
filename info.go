@@ -18,7 +18,7 @@ type Info struct {
 	Blocks uint32 `json:"blocks"`
 
 	// The time offset
-	Timeoffset uint32 `json:"timeoffset"`
+	Timeoffset int32 `json:"timeoffset"`
 
 	// The number of connections
 	Connections uint32 `json:"connections"`
