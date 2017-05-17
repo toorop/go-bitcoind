@@ -36,6 +36,28 @@ func (b *Bitcoind) BackupWallet(destination string) error {
 	return handleError(err, &r)
 }
 
+// CreateRawTransaction makes a new raw transaction from inputs and
+// outputs
+func (b *Bitcoind) CreateRawTransaction(inputs []*Transaction, outputs map[string]float64) (rawtx string, err error) {
+	inStr, err := json.Marshal(inputs)
+	if err != nil {
+		return
+	}
+	outStr, err := json.Marshal(outputs)
+	if err != nil {
+		return
+	}
+
+	r, err := b.client.call("createrawtransaction", []string{string(inStr), string(outStr)})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+
+	rawtx = string(r.Result)
+	return
+
+}
+
 // DumpPrivKey return private key as string associated to public <address>
 func (b *Bitcoind) DumpPrivKey(address string) (privKey string, err error) {
 	r, err := b.client.call("dumpprivkey", []string{address})
@@ -582,6 +604,12 @@ func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minc
 	return
 }
 
+// SendRawTransaction sends the provided signed raw transaction
+func (b *Bitcoind) SendRawTransaction(signedtx string) error {
+	r, err := b.client.call("sendrawtransaction", []string{signedtx})
+	return handleError(err, &r)
+}
+
 // SendToAddress send an amount to a given address
 func (b *Bitcoind) SendToAddress(toAddress string, amount float64, comment, commentTo string) (txID string, err error) {
 	r, err := b.client.call("sendtoaddress", []interface{}{toAddress, amount, comment, commentTo})
@@ -611,10 +639,26 @@ func (b *Bitcoind) SetTxFee(amount float64) error {
 	return handleError(err, &r)
 }
 
-// Stop stop bitcoin server.
-func (b *Bitcoind) Stop() error {
-	r, err := b.client.call("stop", nil)
-	return handleError(err, &r)
+// SignRawTransaction signs a proveded raw transaction
+func (b *Bitcoind) SignRawTransaction(rawtx string) (signedtx string, err error) {
+	r, err := b.client.call("signrawtransaction", []string{rawtx})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+
+	resp := &SignRawTransactionResponse{}
+	err = json.Unmarshal(r.Result, resp)
+	if err != nil {
+		return
+	}
+
+	if resp.HasError() {
+		err = resp
+		return
+	}
+
+	signedtx = resp.Hex
+	return
 }
 
 // SignMessage sign a message with the private key of an address
@@ -625,6 +669,12 @@ func (b *Bitcoind) SignMessage(address, message string) (sig string, err error) 
 	}
 	err = json.Unmarshal(r.Result, &sig)
 	return
+}
+
+// Stop stop bitcoin server.
+func (b *Bitcoind) Stop() error {
+	r, err := b.client.call("stop", nil)
+	return handleError(err, &r)
 }
 
 // Verifymessage Verify a signed message.
