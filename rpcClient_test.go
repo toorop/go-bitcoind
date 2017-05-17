@@ -4,7 +4,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	//"log"
+	// "log"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -40,7 +40,7 @@ var _ = Describe("RpcClient", func() {
 			client, err := newClient("127.0.0.1", 123, "fake", "fake", false)
 			_, err = client.call("getdifficulty", nil)
 			It("err should occured", func() {
-				Expect(err).Should(MatchError("Post http://127.0.0.1:123: dial tcp 127.0.0.1:123: connection refused"))
+				Expect(err.Error()).Should(Equal("Post http://127.0.0.1:123: dial tcp 127.0.0.1:123: getsockopt: connection refused"))
 			})
 		})
 

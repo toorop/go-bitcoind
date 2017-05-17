@@ -52,6 +52,17 @@ func (b *Bitcoind) EncryptWallet(passphrase string) error {
 	return handleError(err, &r)
 }
 
+// EstimateFee gets the wallet estimate for a fee to confirm the
+// transaction in the given number of blocks
+func (b *Bitcoind) EstimateFee(blocks int) (fee float64, err error) {
+	r, err := b.client.call("estimatefee", []int{blocks})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	fee, err = strconv.ParseFloat(string(r.Result), 64)
+	return
+}
+
 // GetAccount returns the account associated with the given address.
 func (b *Bitcoind) GetAccount(address string) (account string, err error) {
 	r, err := b.client.call("getaccount", []string{address})
