@@ -72,6 +72,19 @@ type Transaction struct {
 	Hex             string               `json:"hex,omitempty"`
 }
 
+// UnspentOutput represents the result from a call to `listunspent`
+type UnspentOutput struct {
+	TxID          string  `json:"txid"`
+	Vout          uint32  `json:"vout"`
+	Address       string  `json:"address"`
+	Account       string  `json:"account,omitempty"`
+	ScriptPubKey  string  `json:"scriptPubKey"`
+	Amount        float64 `json:"amount"`
+	Confirmations int64   `json:"confirmations"`
+	Spendable     bool    `json:"spendable"`
+	Solvable      bool    `json:"solvable"`
+}
+
 // UTransactionOut represents a unspent transaction out (UTXO)
 type UTransactionOut struct {
 	Bestblock     string       `json:"bestblock"`

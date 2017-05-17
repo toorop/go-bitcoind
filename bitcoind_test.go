@@ -103,6 +103,27 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})*/
 
+	Describe("Testing EstimateFee", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":0.0001,"error":null,"id":1400477642632278723}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			fee, err := bitcoindClient.EstimateFee(6)
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should return fee of 0.0001", func() {
+				Expect(fee).To(Equal(0.0001))
+			})
+		})
+	})
+
 	Describe("Testing GetAccount", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
