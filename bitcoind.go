@@ -38,12 +38,12 @@ func (b *Bitcoind) BackupWallet(destination string) error {
 
 // CreateRawTransaction makes a new raw transaction from inputs and
 // outputs
-func (b *Bitcoind) CreateRawTransaction(inputs []*Transaction, outputs map[string]float64) (rawtx string, err error) {
+func (b *Bitcoind) CreateRawTransaction(inputs []*RawTransactionInput, output RawTransactionOutput) (rawtx string, err error) {
 	inStr, err := json.Marshal(inputs)
 	if err != nil {
 		return
 	}
-	outStr, err := json.Marshal(outputs)
+	outStr, err := json.Marshal(output)
 	if err != nil {
 		return
 	}

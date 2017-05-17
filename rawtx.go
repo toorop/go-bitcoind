@@ -24,7 +24,7 @@ func (r *SignRawTransactionResponse) Error() string {
 }
 
 type SignRawTransactionError struct {
-	TXID      string `json:"txid"`
+	TxID      string `json:"txid"`
 	Vout      int    `json:"vout"`
 	ScriptSig string `json:"scriptSig"`
 	Sequence  int64  `json:"sequence"`
@@ -32,5 +32,12 @@ type SignRawTransactionError struct {
 }
 
 func (e *SignRawTransactionError) Error() string {
-	return fmt.Sprintf("%s:%d - %s", e.TXID, e.Vout, e.Message)
+	return fmt.Sprintf("%s:%d - %s", e.TxID, e.Vout, e.Message)
 }
+
+type RawTransactionInput struct {
+	TxID string `json:"txid"`
+	Vout int    `json:"vout"`
+}
+
+type RawTransactionOutput map[string]float64
