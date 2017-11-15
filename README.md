@@ -6,7 +6,7 @@ A Golang client library wrapping the bitcoind JSON RPC API
 
 Installation
 -----
-	$ go get https://github.com/Toorop/go-bitcoind
+	$ go get https://github.com/lomocoin/go-bitcoind
 
 
 Usage
@@ -15,7 +15,7 @@ Usage
 	package main
 
 	import (
-		"github.com/toorop/go-bitcoind"
+		"github.com/lomocoin/go-bitcoind"
 		"log"
 	)
 
@@ -55,13 +55,13 @@ Documentation
 -----
 Click on the button below to access the full documentation:
 
-[![GoDoc](https://godoc.org/github.com/Toorop/go-bitcoind?status.png)](https://godoc.org/github.com/Toorop/go-bitcoind)	
+[![GoDoc](https://godoc.org/github.com/lomocoin/go-bitcoind?status.png)](https://godoc.org/github.com/lomocoin/go-bitcoind)	
 
 
 
 Unit tests
 ----
-[![Build Status](https://travis-ci.org/Toorop/go-bitcoind.svg)](https://travis-ci.org/Toorop/go-bitcoind)
+[![Build Status](https://travis-ci.org/lomocoin/go-bitcoind.svg)](https://travis-ci.org/lomocoin/go-bitcoind)
 
 More than 100 unit tests are made.
 
@@ -89,18 +89,8 @@ To run tests:
 Todo
 -----
 * GetBlockTemplate
-* sendrawtransaction
-* signrawtransaction
 * submitblock
 
 #####Note on SSL support 
 
 Note on ssl support : bitcoind library doesn't verify the server's certificate chain. That means that it accepts any certificate presented by the server and any host name in that certificate. In this mode, TLS is susceptible to man-in-the-middle attacks.
-
-
-Donation
-------
-
-![Donation QR](http://api.qrserver.com/v1/create-qr-code/?size=200x200&data=bitcoin:1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB%3Flabel%3DToorop)
-
-[1HgpsmxV52eAjDcoNpVGpYEhGfgN7mM1JB](http://tinyurl.com/mccsoez)
