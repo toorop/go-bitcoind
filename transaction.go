@@ -10,7 +10,7 @@ type ScriptSig struct {
 type Vin struct {
 	Coinbase  string    `json:"coinbase"`
 	Txid      string    `json:"txid"`
-	Vout      int       `json:"vout"`
+	Vout      uint32    `json:"vout"`
 	ScriptSig ScriptSig `json:"scriptSig"`
 	Sequence  uint32    `json:"sequence"`
 }
@@ -91,4 +91,27 @@ type TransactionOutSet struct {
 	BytesSerialized float64 `json:"bytes_serialized"`
 	HashSerialized  string  `json:"hash_serialized"`
 	TotalAmount     float64 `json:"total_amount"`
+}
+
+// RawTxInput models the data needed for raw transaction input that is used in
+// the SignRawTransactionCmd struct.
+type RawTxInput struct {
+	Txid         string `json:"txid"`
+	Vout         uint32 `json:"vout"`
+	ScriptPubKey string `json:"scriptPubKey"`
+	RedeemScript string `json:"redeemScript"`
+}
+
+// SignRawTransactionCmd defines the signrawtransaction JSON-RPC command.
+type SignRawTransactionCmd struct {
+	RawTx    string
+	Inputs   *[]RawTxInput
+	PrivKeys *[]string
+	Flags    *string `jsonrpcdefault:"\"ALL\""`
+}
+
+// SendRawTransactionCmd defines the sendrawtransaction JSON-RPC command.
+type SendRawTransactionCmd struct {
+	HexTx         string
+	AllowHighFees *bool `jsonrpcdefault:"false"`
 }

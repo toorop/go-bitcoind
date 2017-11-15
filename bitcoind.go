@@ -29,6 +29,51 @@ func New(host string, port int, user, passwd string, useSSL bool) (*Bitcoind, er
 	return &Bitcoind{rpcClient}, nil
 }
 
+func (b *Bitcoind) CreateMultiSig(cmd *CreateMultisigCmd) (result CreateMultiSigResult, err error) {
+	r, err := b.client.call("createmultisig", []interface{}{cmd.NRequired, cmd.Keys})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &result)
+	return
+}
+
+func (b *Bitcoind) AddMultiSigAddress(cmd *AddMultisigAddressCmd) (address string, err error) {
+	r, err := b.client.call("addmultisigaddress", []interface{}{cmd.NRequired, cmd.Keys})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &address)
+	return
+}
+
+func (b *Bitcoind) SignRawTransaction(cmd *SignRawTransactionCmd) (result SignRawTransactionResult, err error) {
+	r, err := b.client.call("signrawtransaction", []interface{}{cmd.RawTx, cmd.Inputs, cmd.PrivKeys, cmd.Flags})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &result)
+	return
+}
+
+func (b *Bitcoind) DecodeRawTransaction(hex string) (rawTx RawTransaction, err error) {
+	r, err := b.client.call("decoderawtransaction", []string{hex})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &rawTx)
+	return
+}
+
+func (b *Bitcoind) SendRawTransaction(cmd *SendRawTransactionCmd) (txid string, err error) {
+	r, err := b.client.call("sendrawtransactioncmd", []interface{}{cmd.HexTx, cmd.AllowHighFees})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txid)
+	return
+}
+
 // BackupWallet Safely copies wallet.dat to destination,
 // which can be a directory or a path with filename on the remote server
 func (b *Bitcoind) BackupWallet(destination string) error {
@@ -632,6 +677,7 @@ type ValidateAddressResponse struct {
 	Address      string `json:"address"`
 	IsMine       bool   `json:"ismine"`
 	IsScript     bool   `json:"isscript"`
+	RedeemScript string `json:"hex"` //Only effective for lomocoin
 	PubKey       string `json:"pubkey"`
 	IsCompressed bool   `json:"iscompressed"`
 	Account      string `json:"account"`
