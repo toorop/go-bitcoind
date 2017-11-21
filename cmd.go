@@ -52,3 +52,17 @@ func NewSendRawTransactionCmd(hexTx string, allowHighFees *bool) *SendRawTransac
 		AllowHighFees: allowHighFees,
 	}
 }
+
+// NewCreateRawTransactionCmd returns a new instance which can be used to issue
+// a createrawtransaction JSON-RPC command.
+//
+// Amounts are in BTC.
+func NewCreateRawTransactionCmd(inputs []TransactionInput, amounts map[string]float64,
+	lockTime *int64) *CreateRawTransactionCmd {
+
+	return &CreateRawTransactionCmd{
+		Inputs:   inputs,
+		Amounts:  amounts,
+		LockTime: lockTime,
+	}
+}
