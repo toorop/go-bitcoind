@@ -554,7 +554,7 @@ func (b *Bitcoind) ListTransactions(account string, count, from uint32) (transac
 }
 
 // ListUnspent returns array of unspent transaction inputs in the wallet.
-func (b *Bitcoind) ListUnspent(minconf, maxconf uint32) (transactions []Transaction, err error) {
+func (b *Bitcoind) ListUnspent(minconf, maxconf uint32) (transactions []ListUnspentResult, err error) {
 	if maxconf > 999999 {
 		maxconf = 999999
 	}
