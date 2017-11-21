@@ -47,6 +47,15 @@ func (b *Bitcoind) AddMultiSigAddress(cmd *AddMultisigAddressCmd) (address strin
 	return
 }
 
+func (b *Bitcoind) CreateRawTransaction(cmd *CreateRawTransactionCmd) (result string, err error) {
+	r, err := b.client.call("createrawtransaction", []interface{}{cmd.Inputs, cmd.Amounts})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &result)
+	return
+}
+
 func (b *Bitcoind) SignRawTransaction(cmd *SignRawTransactionCmd) (result SignRawTransactionResult, err error) {
 	r, err := b.client.call("signrawtransaction", []interface{}{cmd.RawTx, cmd.Inputs, cmd.PrivKeys, cmd.Flags})
 	if err = handleError(err, &r); err != nil {

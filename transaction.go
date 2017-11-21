@@ -115,3 +115,17 @@ type SendRawTransactionCmd struct {
 	HexTx         string
 	AllowHighFees *bool `jsonrpcdefault:"false"`
 }
+
+// TransactionInput represents the inputs to a transaction.  Specifically a
+// transaction hash and output number pair.
+type TransactionInput struct {
+	Txid string `json:"txid"`
+	Vout uint32 `json:"vout"`
+}
+
+// CreateRawTransactionCmd defines the createrawtransaction JSON-RPC command.
+type CreateRawTransactionCmd struct {
+	Inputs   []TransactionInput
+	Amounts  map[string]float64 `jsonrpcusage:"{\"address\":amount,...}"` // In BTC
+	LockTime *int64
+}
