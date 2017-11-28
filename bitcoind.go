@@ -75,7 +75,7 @@ func (b *Bitcoind) DecodeRawTransaction(hex string) (rawTx RawTransaction, err e
 }
 
 func (b *Bitcoind) SendRawTransaction(cmd *SendRawTransactionCmd) (txid string, err error) {
-	r, err := b.client.call("sendrawtransactioncmd", []interface{}{cmd.HexTx, cmd.AllowHighFees})
+	r, err := b.client.call("sendrawtransaction", []interface{}{cmd.HexTx, cmd.AllowHighFees})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
