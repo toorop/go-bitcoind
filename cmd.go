@@ -66,3 +66,14 @@ func NewCreateRawTransactionCmd(inputs []TransactionInput, amounts map[string]fl
 		LockTime: lockTime,
 	}
 }
+
+// LMC.
+func NewCreateSendFromAddressCmd(fromAddress string, amounts map[string]float64,
+	fee float64) *CreateSendFromAddressCmd {
+
+	return &CreateSendFromAddressCmd{
+		FromAddress:   fromAddress,
+		Amounts:  amounts,
+		Fee: fee,
+	}
+}

@@ -47,6 +47,16 @@ func (b *Bitcoind) AddMultiSigAddress(cmd *AddMultisigAddressCmd) (address strin
 	return
 }
 
+//only for lomocoin
+func (b *Bitcoind) CreateSendFromAddress(cmd *CreateSendFromAddressCmd) (result string, err error) {
+	r, err := b.client.call("createsendfromaddress", []interface{}{cmd.FromAddress, cmd.Amounts})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &result)
+	return
+}
+
 func (b *Bitcoind) CreateRawTransaction(cmd *CreateRawTransactionCmd) (result string, err error) {
 	r, err := b.client.call("createrawtransaction", []interface{}{cmd.Inputs, cmd.Amounts})
 	if err = handleError(err, &r); err != nil {

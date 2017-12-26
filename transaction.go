@@ -129,3 +129,10 @@ type CreateRawTransactionCmd struct {
 	Amounts  map[string]float64 `jsonrpcusage:"{\"address\":amount,...}"` // In BTC
 	LockTime *int64
 }
+
+// CreateSendFromAddressCmd defines the createsendfromaddress JSON-RPC command.
+type CreateSendFromAddressCmd struct {
+	FromAddress string
+	Amounts     map[string]float64 `jsonrpcusage:"{\"address\":amount,...}"` // In LMC
+	Fee         float64
+}
