@@ -47,6 +47,16 @@ func (b *Bitcoind) AddMultiSigAddress(cmd *AddMultisigAddressCmd) (address strin
 	return
 }
 
+//only for lomocoin
+func (b *Bitcoind) CreateSendFromAddress(cmd *CreateSendFromAddressCmd) (result string, err error) {
+	r, err := b.client.call("createsendfromaddress", []interface{}{cmd.FromAddress, cmd.Amounts})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &result)
+	return
+}
+
 func (b *Bitcoind) CreateRawTransaction(cmd *CreateRawTransactionCmd) (result string, err error) {
 	r, err := b.client.call("createrawtransaction", []interface{}{cmd.Inputs, cmd.Amounts})
 	if err = handleError(err, &r); err != nil {
@@ -554,11 +564,11 @@ func (b *Bitcoind) ListTransactions(account string, count, from uint32) (transac
 }
 
 // ListUnspent returns array of unspent transaction inputs in the wallet.
-func (b *Bitcoind) ListUnspent(minconf, maxconf uint32) (transactions []ListUnspentResult, err error) {
+func (b *Bitcoind) ListUnspent(minconf, maxconf uint32, addresses []string) (transactions []ListUnspentResult, err error) {
 	if maxconf > 999999 {
 		maxconf = 999999
 	}
-	r, err := b.client.call("listunspent", []interface{}{minconf, maxconf})
+	r, err := b.client.call("listunspent", []interface{}{minconf, maxconf, addresses})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
