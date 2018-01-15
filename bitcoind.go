@@ -636,7 +636,7 @@ func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minc
 }
 
 // SendToAddressLMC send an amount to a given address no comment for LMC created by bigzhu
-func (b *Bitcoind) SendToAddressLMC(toAddress string, amount float64, comment, commentTo string) (txID string, err error) {
+func (b *Bitcoind) SendToAddressLMC(toAddress string, amount float64) (txID string, err error) {
 	r, err := b.client.call("sendtoaddress", []interface{}{toAddress, amount})
 	if err = handleError(err, &r); err != nil {
 		return
