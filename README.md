@@ -55,13 +55,13 @@ Documentation
 -----
 Click on the button below to access the full documentation:
 
-[![GoDoc](https://godoc.org/github.com/Toorop/go-bitcoind?status.png)](https://godoc.org/github.com/Toorop/go-bitcoind)	
+[![GoDoc](https://godoc.org/github.com/toorop/go-bitcoind?status.png)](https://godoc.org/github.com/toorop/go-bitcoind)	
 
 
 
 Unit tests
 ----
-[![Build Status](https://travis-ci.org/Toorop/go-bitcoind.svg)](https://travis-ci.org/Toorop/go-bitcoind)
+[![Build Status](https://travis-ci.org/Toorop/go-bitcoind.svg)](https://travis-ci.org/toorop/go-bitcoind)
 
 More than 100 unit tests are made.
 
