@@ -625,6 +625,16 @@ func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minco
 	return
 }
 
+// SendManyLMC send multiple times for LMC
+func (b *Bitcoind) SendManyLMC(fromAccount string, amounts map[string]float64, minconf uint32) (txID string, err error) {
+	r, err := b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txID)
+	return
+}
+
 // SenMany send multiple times
 func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minconf uint32, comment string) (txID string, err error) {
 	r, err := b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf, comment})
