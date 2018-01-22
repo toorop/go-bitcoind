@@ -534,20 +534,24 @@ func (b *Bitcoind) ListReceivedByAddress(minConf uint32, includeEmpty bool) (lis
 	return
 }
 
-// ListSinceBlock
-func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32) (transaction []Transaction, err error) {
-	r, err := b.client.call("listsinceblock", []interface{}{blockHash, targetConfirmations})
+type ts struct {
+	Transactions []Transaction
+	LastBlock    string
+}
+
+// ListSinceBlock kao
+// modify by bigzhu
+func (b *Bitcoind) ListSinceBlock(blockHash string, targetConfirmations uint32, includeWatchonly bool) (result ts, err error) {
+	r, err := b.client.call("listsinceblock", []interface{}{blockHash, targetConfirmations, includeWatchonly})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	type ts struct {
-		Transactions []Transaction
-	}
-	var result ts
+
+	// var result ts
 	if err = json.Unmarshal(r.Result, &result); err != nil {
 		return
 	}
-	transaction = result.Transactions
+	// transaction = result.Transactions
 	return
 }
 
