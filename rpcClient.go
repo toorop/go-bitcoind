@@ -61,28 +61,14 @@ func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcC
 }
 
 // doTimeoutRequest process a HTTP request with timeout
-func (c *rpcClient) doTimeoutRequest(timer *time.Timer, req *http.Request) (*http.Response, error) {
-	type result struct {
-		resp *http.Response
-		err  error
-	}
-	done := make(chan result, 1)
-	go func() {
-		resp, err := c.httpClient.Do(req)
-		done <- result{resp, err}
-	}()
-	// Wait for the read or the timeout
-	select {
-	case r := <-done:
-		return r.resp, r.err
-	case <-timer.C:
-		return nil, errors.New("Timeout reading data from server")
-	}
+func (c *rpcClient) doTimeoutRequest(timeout time.Duration, req *http.Request) (*http.Response, error) {
+	c.httpClient.Timeout = timeout
+	return c.httpClient.Do(req)
 }
 
 // call prepare & exec the request
 func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err error) {
-	connectTimer := time.NewTimer(RPCCLIENT_TIMEOUT * time.Second)
+	connectTimeout := RPCCLIENT_TIMEOUT * time.Second
 	rpcR := rpcRequest{method, params, time.Now().UnixNano(), "1.0"}
 	payloadBuffer := &bytes.Buffer{}
 	jsonEncoder := json.NewEncoder(payloadBuffer)
@@ -102,11 +88,13 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 		req.SetBasicAuth(c.user, c.passwd)
 	}
 
-	resp, err := c.doTimeoutRequest(connectTimer, req)
+	resp, err := c.doTimeoutRequest(connectTimeout, req)
+
+	defer resp.Body.Close()
+
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	//fmt.Println(string(data))
