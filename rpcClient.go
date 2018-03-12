@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"log"
 )
 
 // A rpcClient represents a JSON RPC client (over HTTP(s)).
@@ -90,7 +91,11 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 
 	resp, err := c.doTimeoutRequest(connectTimeout, req)
 
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+    }()
 
 	if err != nil {
 		return
