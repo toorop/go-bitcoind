@@ -28,15 +28,15 @@ type rpcRequest struct {
 }
 
 // rpcError represents a RCP error
-/*type rpcError struct {
+type rpcError struct {
 	Code    int16  `json:"code"`
 	Message string `json:"message"`
-}*/
+}
 
 type rpcResponse struct {
 	Id     int64           `json:"id"`
 	Result json.RawMessage `json:"result"`
-	Err    interface{}     `json:"error"`
+	Err    rpcError        `json:"error"`
 }
 
 func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcClient, err error) {
@@ -94,7 +94,7 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 		if resp != nil {
 			resp.Body.Close()
 		}
-    }()
+	}()
 
 	if err != nil {
 		return
@@ -105,10 +105,20 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	if err != nil {
 		return
 	}
+
+	var rErr rpcError
 	if resp.StatusCode != 200 {
 		err = errors.New("HTTP error: " + resp.Status)
+		if json.Unmarshal(data, &rErr) != nil {
+			return
+		}
+	}
+	if errUnmarshal := json.Unmarshal(data, &rr); errUnmarshal != nil {
+		err = errUnmarshal
 		return
 	}
-	err = json.Unmarshal(data, &rr)
+	if rErr.Message != "" { //当有rpc error 发生的时候，把error结果也返回
+		rr.Err = rErr
+	}
 	return
 }
