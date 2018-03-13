@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-	"log"
 )
 
 // A rpcClient represents a JSON RPC client (over HTTP(s)).
