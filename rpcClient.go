@@ -119,6 +119,7 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	}
 	if rErr.Message != "" { //当有rpc error 发生的时候，把error结果也返回
 		rr.Err = rErr
+		err = errors.New(fmt.Sprintf("%v : %v", rr.Err.Code, rr.Err.Message))
 	}
 	return
 }
