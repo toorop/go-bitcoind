@@ -106,20 +106,17 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 		return
 	}
 
-	var rErr rpcError
 	if resp.StatusCode != 200 {
 		err = errors.New("HTTP error: " + resp.Status)
-		if json.Unmarshal(data, &rErr) != nil {
-			return
-		}
 	}
-	if errUnmarshal := json.Unmarshal(data, &rr); errUnmarshal != nil {
-		err = errUnmarshal
+
+	err = json.Unmarshal(data, &rr)
+	if err != nil {
 		return
 	}
-	if rErr.Message != "" { //当有rpc error 发生的时候，把error结果也返回
-		rr.Err = rErr
-		err = errors.New(fmt.Sprintf("%v : %v", rr.Err.Code, rr.Err.Message))
+
+	if resp.StatusCode != 200 {
+		err = errors.New("HTTP error: "+resp.Status + "  error message: " +  rr.Err.Message)
 	}
 	return
 }
