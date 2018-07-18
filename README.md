@@ -26,7 +26,7 @@ Usage
 		PASSWD             = "passwd"
 		USESSL             = false
 		WALLET_PASSPHRASE  = "WalletPassphrase"
-)
+	)
 
 	func main() {
 		bc, err := bitcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
@@ -93,7 +93,7 @@ Todo
 * signrawtransaction
 * submitblock
 
-#####Note on SSL support 
+##### Note on SSL support 
 
 Note on ssl support : bitcoind library doesn't verify the server's certificate chain. That means that it accepts any certificate presented by the server and any host name in that certificate. In this mode, TLS is susceptible to man-in-the-middle attacks.
 
