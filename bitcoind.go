@@ -278,7 +278,7 @@ func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface
 	if verbose {
 		intVerbose = 1
 	}
-	r, err := b.client.call("getrawtransaction", []interface{}{txId, verbose})
+	r, err := b.client.call("getrawtransaction", []interface{}{txId, intVerbose})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
