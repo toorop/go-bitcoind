@@ -274,6 +274,10 @@ func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
 
 // GetRawTransaction returns raw transaction representation for given transaction id.
 func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface{}, err error) {
+	intVerbose := 0
+	if verbose {
+		intVerbose = 1
+	}
 	r, err := b.client.call("getrawtransaction", []interface{}{txId, verbose})
 	if err = handleError(err, &r); err != nil {
 		return
