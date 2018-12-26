@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+
 const (
 	// VERSION represents bicoind package version
 	VERSION = 0.1
@@ -157,6 +158,28 @@ func (b *Bitcoind) GetBlockTemplate(capabilities []string, mode string) (templat
 		return
 	}
 	fmt.Println(json.Unmarshal(r.Result, &template))
+	return
+}
+
+
+
+type ChainTip struct {
+	// The height of the current tip
+	Height int
+	// The hash of the highest tip
+	Hash string
+	// The length of the associated blockchain branch
+	BranchLen int
+	// The status of the current tip.
+	Status string
+}
+
+func (b *Bitcoind) GetChainTips() (tips []ChainTip, err error) {
+	r, err := b.client.call("getchaintips", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &tips)
 	return
 }
 
@@ -669,3 +692,4 @@ func (b *Bitcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) e
 	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
 }
+ 
