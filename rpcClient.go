@@ -17,6 +17,7 @@ type rpcClient struct {
 	user       string
 	passwd     string
 	httpClient *http.Client
+	timeout    int64
 }
 
 // rpcRequest represent a RCP request
@@ -39,7 +40,7 @@ type rpcResponse struct {
 	Err    interface{}     `json:"error"`
 }
 
-func newClient(host string, port int, user, passwd string, useSSL bool) (c *rpcClient, err error) {
+func newClient(host string, port int, user, passwd string, useSSL bool, time int64) (c *rpcClient, err error) {
 	if len(host) == 0 {
 		err = errors.New("Bad call missing argument host")
 		return
@@ -82,7 +83,7 @@ func (c *rpcClient) doTimeoutRequest(timer *time.Timer, req *http.Request) (*htt
 
 // call prepare & exec the request
 func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err error) {
-	connectTimer := time.NewTimer(RPCCLIENT_TIMEOUT * time.Second)
+	connectTimer := time.NewTimer(time.Duration(c.timeout) * time.Second)
 	rpcR := rpcRequest{method, params, time.Now().UnixNano(), "1.0"}
 	payloadBuffer := &bytes.Buffer{}
 	jsonEncoder := json.NewEncoder(payloadBuffer)
