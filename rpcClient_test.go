@@ -15,7 +15,7 @@ import (
 var _ = Describe("RpcClient", func() {
 	Describe("Initialise a new rpcClient", func() {
 		Context("when initialisation succeeded", func() {
-			client, err := newClient("127.0.0.1", 8334, "user", "paswd", false, 600)
+			client, err := newClient("127.0.0.1", 8334, "user", "paswd", false, 30)
 			It("err should be nil", func() {
 				Expect(err).To(BeNil())
 			})
@@ -35,9 +35,9 @@ var _ = Describe("RpcClient", func() {
 		})
 	})
 
-	Describe("Do resquests", func() {
+	Describe("Do requests", func() {
 		Context("When connexion fail", func() {
-			client, err := newClient("127.0.0.1", 123, "fake", "fake", false, 600)
+			client, err := newClient("127.0.0.1", 123, "fake", "fake", false, 30)
 			_, err = client.call("getdifficulty", nil)
 			It("err should occured", func() {
 				Expect(err).Should(MatchError("Post http://127.0.0.1:123: dial tcp 127.0.0.1:123: connection refused"))
@@ -53,7 +53,7 @@ var _ = Describe("RpcClient", func() {
 			p := strings.Split(ts.URL, ":")
 			host := p[1][2:]
 			port, err := strconv.ParseInt(p[2], 10, 64)
-			client, err := newClient(host, int(port), "fake", "fake", false, 600)
+			client, err := newClient(host, int(port), "fake", "fake", false, 30)
 			_, err = client.call("getdifficulty", nil)
 
 			It("timeout err should occured", func() {
