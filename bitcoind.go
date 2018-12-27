@@ -11,6 +11,8 @@ import (
 const (
 	// VERSION represents bicoind package version
 	VERSION = 0.1
+	// DEFAULT_RPCCLIENT_TIMEOUT represent http timeout for rcp client
+	RPCCLIENT_TIMEOUT = 30
 )
 
 // A Bitcoind represents a Bitcoind client
@@ -19,7 +21,13 @@ type Bitcoind struct {
 }
 
 // New return a new bitcoind
-func New(host string, port int, user, passwd string, useSSL bool, timeout int64) (*Bitcoind, error) {
+func New(host string, port int, user, passwd string, useSSL bool, timeoutParam ...int) (*Bitcoind, error) {
+	var timeout int = RPCCLIENT_TIMEOUT
+	// If the timeout is specified in timeoutParam, allow it. 
+	if len[timeoutParam] != 0 {
+		timeout = timeoutParam[0]
+	}
+
 	rpcClient, err := newClient(host, port, user, passwd, useSSL, timeout)
 	if err != nil {
 		return nil, err
