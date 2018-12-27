@@ -21,8 +21,14 @@ type Bitcoind struct {
 }
 
 // New return a new bitcoind
-func New(host string, port int, user, passwd string, useSSL bool) (*Bitcoind, error) {
-	rpcClient, err := newClient(host, port, user, passwd, useSSL)
+func New(host string, port int, user, passwd string, useSSL bool, timeoutParam ...int) (*Bitcoind, error) {
+	var timeout int = RPCCLIENT_TIMEOUT
+	// If the timeout is specified in timeoutParam, allow it. 
+	if len(timeoutParam) != 0 {
+		timeout = timeoutParam[0]
+	}
+
+	rpcClient, err := newClient(host, port, user, passwd, useSSL, timeout)
 	if err != nil {
 		return nil, err
 	}
