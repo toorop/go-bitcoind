@@ -24,7 +24,7 @@ type Bitcoind struct {
 func New(host string, port int, user, passwd string, useSSL bool, timeoutParam ...int) (*Bitcoind, error) {
 	var timeout int = RPCCLIENT_TIMEOUT
 	// If the timeout is specified in timeoutParam, allow it. 
-	if len[timeoutParam] != 0 {
+	if len(timeoutParam) != 0 {
 		timeout = timeoutParam[0]
 	}
 
