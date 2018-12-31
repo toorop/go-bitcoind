@@ -292,7 +292,7 @@ func (b *Bitcoind) GetRawChangeAddress(account ...string) (rawAddress string, er
 }
 
 // GetRawMempool returns all transaction ids in memory pool
-func (b *Bitcoind) GetRawMempool(verboseParam ...bool) (txId []string, err error) {
+func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
 
 	r, err := b.client.call("getrawmempool", nil)
 	if err = handleError(err, &r); err != nil {
