@@ -292,12 +292,59 @@ func (b *Bitcoind) GetRawChangeAddress(account ...string) (rawAddress string, er
 }
 
 // GetRawMempool returns all transaction ids in memory pool
-func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
+func (b *Bitcoind) GetRawMempool(verboseParam ...bool) (txId []string, err error) {
+
 	r, err := b.client.call("getrawmempool", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
+
 	err = json.Unmarshal(r.Result, &txId)
+	return
+}
+
+
+
+type VerboseTx struct {
+	// Virtual transaction size as defined in BIP 141
+	Size uint32
+	// Transaction fee in BTC
+	Fee float64
+	// Transaction fee with fee deltas used for mining priority
+	ModifiedFee float64
+	// Local time when tx entered pool
+	Time uint32
+	// Block height when tx entered pool 
+	Height uint32
+	// Number of inpool descendents (including this one)
+	DescendantCount uint32
+	// virtual transaction size of in-mempool descendants (including this one)
+	DescendantSize uint32
+	// modified fees (see above) of in-mempool descendants (including this one)
+	DescendantFees float64
+	// number of in-mempool ancestor transactions (including this one)
+	AncestorCount uint32
+	// virtual transaction size of in-mempool ancestors (including this one)
+	AncestorSize uint32
+	// modified fees (see above) of in-mempool ancestors (including this one)
+	AncestorFees uint32
+	// hash of serialized transaction, including witness data
+	WTxId string
+	// unconfirmed transactions used as inputs for this transaction
+	Depends []string
+}
+
+// GetRawMempoolVerbose returns a verbose set of transactions
+// map [TxId] => VerboseTx
+func (b *Bitcoind) GetRawMempoolVerbose() (txs map[string]VerboseTx, err error) {
+
+	r, err := b.client.call("getrawmempool", true)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+
+	// marshall the data into the string txs map
+	err = json.Unmarshal(r.Result, &txs)
 	return
 }
 
