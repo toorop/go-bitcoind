@@ -301,6 +301,50 @@ func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
 	return
 }
 
+
+type VerboseTx struct {
+	// Virtual transaction size as defined in BIP 141
+	Size uint32
+	// Transaction fee in BTC
+	Fee float64
+	// Transaction fee with fee deltas used for mining priority
+	ModifiedFee float64
+	// Local time when tx entered pool
+	Time uint32
+	// Block height when tx entered pool 
+	Height uint32
+	// Number of inpool descendents (including this one)
+	DescendantCount uint32
+	// Virtual transaction size of in-mempool descendants (including this one)
+	DescendantSize uint32
+	// Modified fees (see above) of in-mempool descendants (including this one)
+	DescendantFees float64
+	// Number of in-mempool ancestor transactions (including this one)
+	AncestorCount uint32
+	// Virtual transaction size of in-mempool ancestors (including this one)
+	AncestorSize uint32
+	// Modified fees (see above) of in-mempool ancestors (including this one)
+	AncestorFees uint32
+	// Hash of serialized transaction, including witness data
+	WTxId string
+	// Unconfirmed transactions used as inputs for this transaction
+	Depends []string
+	// Used by Bitcoin Unlimited RPC
+	SpentBy []string
+}
+
+// GetRawMempoolVerbose returns a verbose set of transactions
+// map [TxId] => VerboseTx
+func (b *Bitcoind) GetRawMempoolVerbose() (txs map[string]VerboseTx, err error) {
+	r, err := b.client.call("getrawmempool", []bool{true})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	// marshall the data into the string txs map
+	err = json.Unmarshal(r.Result, &txs)
+	return
+}
+
 // GetRawTransaction returns raw transaction representation for given transaction id.
 func (b *Bitcoind) GetRawTransaction(txId string, verbose bool) (rawTx interface{}, err error) {
 	intVerbose := 0
