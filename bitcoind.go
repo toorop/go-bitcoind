@@ -124,6 +124,16 @@ func (b *Bitcoind) GetBlock(blockHash string) (block Block, err error) {
 	return
 }
 
+// GetRawBlock returns the raw hex for the block 
+func (b *Bitcoind) GetRawBlock(blockHash string) (block string, err error) {
+	r, err := b.client.call("getblock", []string{blockHash, "false"})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	block = string(r.Result)
+	return
+}
+
 // GetBlockCount returns the number of blocks in the longest block chain.
 func (b *Bitcoind) GetBlockCount() (count uint64, err error) {
 	r, err := b.client.call("getblockcount", nil)
