@@ -126,7 +126,7 @@ func (b *Bitcoind) GetBlock(blockHash string) (block Block, err error) {
 
 // GetRawBlock returns the raw hex for the block 
 func (b *Bitcoind) GetRawBlock(blockHash string) (block string, err error) {
-	r, err := b.client.call("getblock", []string{blockHash, "false"})
+	r, err := b.client.call("getblock", []interface{}{blockHash, false})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
