@@ -8,7 +8,6 @@ import (
 	"strconv"
 )
 
-
 const (
 	// VERSION represents bicoind package version
 	VERSION = 0.1
@@ -24,7 +23,7 @@ type Bitcoind struct {
 // New return a new bitcoind
 func New(host string, port int, user, passwd string, useSSL bool, timeoutParam ...int) (*Bitcoind, error) {
 	var timeout int = RPCCLIENT_TIMEOUT
-	// If the timeout is specified in timeoutParam, allow it. 
+	// If the timeout is specified in timeoutParam, allow it.
 	if len(timeoutParam) != 0 {
 		timeout = timeoutParam[0]
 	}
@@ -104,6 +103,36 @@ func (b *Bitcoind) GetBalance(account string, minconf uint64) (balance float64, 
 	return
 }
 
+type BlockHeader struct {
+	Hash              string
+	Confirmations     int
+	Height            int
+	Version           uint32
+	VersionHex        string
+	Merkleroot        string
+	Time              int64
+	Mediantime        int64
+	Nonce             uint32
+	Bits              uint32
+	Difficulty        float64
+	Chainwork         string
+	Txes              int    `json:"nTx"`
+	Previousblockhash string `json:"omitempty"`
+	Nextblockhash     string `json:"omitempty"`
+}
+
+func (b *Bitcoind) GetBlockheader(blockHash string) (*BlockHeader, error) {
+	r, err := b.client.call("getblockheader", []string{blockHash})
+	if err = handleError(err, &r); err != nil {
+		return nil, err
+	}
+
+	var blockHeader BlockHeader
+	err = json.Unmarshal(r.Result, &blockHeader)
+
+	return &blockHeader, nil
+}
+
 // GetBestBlockhash returns the hash of the best (tip) block in the longest block chain.
 func (b *Bitcoind) GetBestBlockhash() (bestBlockHash string, err error) {
 	r, err := b.client.call("getbestblockhash", nil)
@@ -176,8 +205,6 @@ func (b *Bitcoind) GetBlockTemplate(capabilities []string, mode string) (templat
 	fmt.Println(json.Unmarshal(r.Result, &template))
 	return
 }
-
-
 
 type ChainTip struct {
 	// The height of the current tip
@@ -311,7 +338,6 @@ func (b *Bitcoind) GetRawMempool() (txId []string, err error) {
 	return
 }
 
-
 type VerboseTx struct {
 	// Virtual transaction size as defined in BIP 141
 	Size uint32
@@ -321,7 +347,7 @@ type VerboseTx struct {
 	ModifiedFee float64
 	// Local time when tx entered pool
 	Time uint32
-	// Block height when tx entered pool 
+	// Block height when tx entered pool
 	Height uint32
 	// Number of inpool descendents (including this one)
 	DescendantCount uint32
@@ -752,4 +778,3 @@ func (b *Bitcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) e
 	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
 }
- 
