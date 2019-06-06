@@ -28,12 +28,6 @@ type rpcRequest struct {
 	JsonRpc string      `json:"jsonrpc"`
 }
 
-// rpcError represents a RCP error
-/*type rpcError struct {
-	Code    int16  `json:"code"`
-	Message string `json:"message"`
-}*/
-
 type rpcResponse struct {
 	Id     int64           `json:"id"`
 	Result json.RawMessage `json:"result"`
@@ -110,12 +104,11 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
-	//fmt.Println(string(data))
 	if err != nil {
 		return
 	}
 	if resp.StatusCode != 200 {
-		err = errors.New("HTTP error: " + resp.Status)
+		err = errors.New("HTTP error: " + string(data))
 		return
 	}
 	err = json.Unmarshal(data, &rr)
