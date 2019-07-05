@@ -28,16 +28,32 @@ type rpcRequest struct {
 	JsonRpc string      `json:"jsonrpc"`
 }
 
-// rpcError represents a RCP error
-/*type rpcError struct {
-	Code    int16  `json:"code"`
-	Message string `json:"message"`
-}*/
+// RPCErrorCode represents an error code to be used as a part of an RPCError
+// which is in turn used in a JSON-RPC Response object.
+//
+// A specific type is used to help ensure the wrong errors aren't used.
+type RPCErrorCode int
+
+// RPCError represents an error that is used as a part of a JSON-RPC Response
+// object.
+type RPCError struct {
+	Code    RPCErrorCode `json:"code,omitempty"`
+	Message string       `json:"message,omitempty"`
+}
+
+// Guarantee RPCError satisfies the builtin error interface.
+var _, _ error = RPCError{}, (*RPCError)(nil)
+
+// Error returns a string describing the RPC error.  This satisfies the
+// builtin error interface.
+func (e RPCError) Error() string {
+	return fmt.Sprintf("%d: %s", e.Code, e.Message)
+}
 
 type rpcResponse struct {
 	Id     int64           `json:"id"`
 	Result json.RawMessage `json:"result"`
-	Err    interface{}     `json:"error"`
+	Err    *RPCError       `json:"error"`
 }
 
 func newClient(host string, port int, user, passwd string, useSSL bool, timeout int) (c *rpcClient, err error) {
@@ -114,10 +130,7 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	if err != nil {
 		return
 	}
-	if resp.StatusCode != 200 {
-		err = errors.New("HTTP error: " + resp.Status)
-		return
-	}
+
 	err = json.Unmarshal(data, &rr)
 	return
 }
