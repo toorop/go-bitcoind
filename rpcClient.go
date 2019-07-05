@@ -98,10 +98,8 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 	req.Header.Add("Content-Type", "application/json;charset=utf-8")
 	req.Header.Add("Accept", "application/json")
 
-	// Auth ?
-	if len(c.user) > 0 || len(c.passwd) > 0 {
-		req.SetBasicAuth(c.user, c.passwd)
-	}
+	// Configure basic access authorization.
+	req.SetBasicAuth(c.user, c.passwd)
 
 	resp, err := c.doTimeoutRequest(connectTimer, req)
 	if err != nil {
