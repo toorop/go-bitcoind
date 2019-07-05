@@ -4,7 +4,6 @@ package bitcoind
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 )
 
@@ -202,7 +201,6 @@ func (b *Bitcoind) GetBlockTemplate(capabilities []string, mode string) (templat
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	fmt.Println(json.Unmarshal(r.Result, &template))
 	return
 }
 
