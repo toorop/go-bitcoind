@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestBitcoind(t *testing.T) {
+func TestNavcoind(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Bitcoind Suite")
+	RunSpecs(t, "Navcoind Suite")
 }

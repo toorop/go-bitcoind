@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/toorop/go-bitcoind"
+	"github.com/NavExplorer/navcoind-go"
 	"log"
 )
 
@@ -16,7 +16,7 @@ const (
 )
 
 func main() {
-	bc, err := bitcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
+	bc, err := navcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -260,7 +260,7 @@ func main() {
 
 	// LockUnspent
 	/*
-		success, err := bc.LockUnspent(false, []bitcoind.UnspendableOutput{{"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5", 0}, {"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515", 0}})
+		success, err := bc.LockUnspent(false, []navcoind.UnspendableOutput{{"61195c9a04eb4bb6ef7c1d360e472b1620c4befed611ddcab46a6b2711344cd5", 0}, {"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515", 0}})
 		log.Println(err, success)
 	*/
 

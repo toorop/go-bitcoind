@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 // A MiningInfo represents a mininginfo response
 type MiningInfo struct {

@@ -1,7 +1,7 @@
-package bitcoind
+package navcoind
 
 import (
-	//. "github.com/Toorop/go-bitcoind"
+	//. "github.com/Toorop/go-navcoind"
 	"errors"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -37,13 +37,10 @@ var _ = Describe("Helpers", func() {
 
 		// RPC error is not null
 		Context("RPC error", func() {
-			rpcError := make(map[string]interface{})
-			rpcError["code"] = 6.32
-			rpcError["message"] = "Fake error"
 			response := rpcResponse{
 				Id:     1212,
 				Result: []byte("{}"),
-				Err:    rpcError,
+				Err:    &RPCError{Code: 400, Message: "Fake error"},
 			}
 			It("should occur", func() {
 				err := handleError(nil, &response)

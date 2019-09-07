@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 type Peer struct {
 	// The ip address and port of the peer

@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 // A ScriptSig represents a scriptsyg
 type ScriptSig struct {

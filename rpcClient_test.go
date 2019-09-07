@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ var _ = Describe("RpcClient", func() {
 
 		Context("when initialisation failed (empty host)", func() {
 			client, err := New("", 8334, "user", "paswd", false)
-			It("err should occured", func() {
+			It("err should occurred", func() {
 				Expect(err).Should(HaveOccurred())
 			})
 			It("rpcClient should be nil", func() {
@@ -39,12 +39,12 @@ var _ = Describe("RpcClient", func() {
 		Context("When connexion fail", func() {
 			client, err := newClient("127.0.0.1", 123, "fake", "fake", false, 30)
 			_, err = client.call("getdifficulty", nil)
-			It("err should occured", func() {
-				Expect(err).Should(MatchError("Post http://127.0.0.1:123: dial tcp 127.0.0.1:123: connection refused"))
+			It("err should occurred", func() {
+				Expect(err).Should(MatchError("Failed to complete request"))
 			})
 		})
 
-		Context("When timeout occured", func() {
+		Context("When timeout occurred", func() {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				time.Sleep((RPCCLIENT_TIMEOUT + 2) * time.Second)
 				fmt.Fprintln(w, "Hello, client")
@@ -56,8 +56,8 @@ var _ = Describe("RpcClient", func() {
 			client, err := newClient(host, int(port), "fake", "fake", false, 30)
 			_, err = client.call("getdifficulty", nil)
 
-			It("timeout err should occured", func() {
-				Expect(err).Should(MatchError("Timeout reading data from server"))
+			It("timeout err should occurred", func() {
+				Expect(err).Should(MatchError("Failed to complete request"))
 			})
 
 		})

@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 // Represents a block
 type Block struct {

@@ -1,4 +1,4 @@
-package bitcoind
+package navcoind
 
 import (
 	"bytes"
@@ -121,6 +121,7 @@ func (c *rpcClient) call(method string, params interface{}) (rr rpcResponse, err
 
 	resp, err := c.doTimeoutRequest(connectTimer, req)
 	if err != nil {
+		err = errors.New("Failed to complete request")
 		return
 	}
 	defer resp.Body.Close()

@@ -1,12 +1,12 @@
-bitcoind
+navcoind
 ===========
 
-A Golang client library wrapping the bitcoind JSON RPC API
+A Golang client library wrapping the navcoind JSON RPC API
 
 
 Installation
 -----
-	$ go get https://github.com/Toorop/go-bitcoind
+	$ go get https://github.com/NavExplorer/navcoind-go
 
 
 Usage
@@ -15,7 +15,7 @@ Usage
 	package main
 
 	import (
-		"github.com/toorop/go-bitcoind"
+		"github.com/NavExplorer/navcoind-go"
 		"log"
 	)
 
@@ -29,7 +29,7 @@ Usage
 	)
 
 	func main() {
-		bc, err := bitcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
+		bc, err := navcoind.New(SERVER_HOST, SERVER_PORT, USER, PASSWD, USESSL)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -55,13 +55,13 @@ Documentation
 -----
 Click on the button below to access the full documentation:
 
-[![GoDoc](https://godoc.org/github.com/toorop/go-bitcoind?status.png)](https://godoc.org/github.com/toorop/go-bitcoind)	
+[![GoDoc](https://godoc.org/github.com/NavExplorer/navcoind-go?status.png)](https://godoc.org/github.com/NavExplorer/navcoind-go)	
 
 
 
 Unit tests
 ----
-[![Build Status](https://travis-ci.org/Toorop/go-bitcoind.svg)](https://travis-ci.org/toorop/go-bitcoind)
+[![Build Status](https://travis-ci.org/NavExplorer/navcoind-go.svg)](https://travis-ci.org/NavExplorer/navcoind-go)
 
 More than 100 unit tests are made.
 
@@ -71,7 +71,7 @@ To run tests:
 	$ go get github.com/onsi/gomega
 	$ ginkgo
 
-	Running Suite: Bitcoind Suite	
+	Running Suite: Navcoind Suite	
 	=============================
 	Random Seed: 1401120770
 	Will run 112 of 112 specs
@@ -95,7 +95,7 @@ Todo
 
 ##### Note on SSL support 
 
-Note on ssl support : bitcoind library doesn't verify the server's certificate chain. That means that it accepts any certificate presented by the server and any host name in that certificate. In this mode, TLS is susceptible to man-in-the-middle attacks.
+Note on ssl support : navcoind library doesn't verify the server's certificate chain. That means that it accepts any certificate presented by the server and any host name in that certificate. In this mode, TLS is susceptible to man-in-the-middle attacks.
 
 
 Donation
