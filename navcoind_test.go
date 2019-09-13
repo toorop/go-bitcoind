@@ -1186,7 +1186,7 @@ var _ = Describe("Navcoind", func() {
 					BlockHash:     "000000000000000043489f0db359cdb3434f1464e176507916264cb07bbdb581",
 					Confirmations: 5,
 					Time:          1400597099,
-					Blocktime:     1400597099,
+					BlockTime:     1400597099,
 				},
 				))
 			})
