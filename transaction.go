@@ -1,17 +1,18 @@
 package navcoind
 
-// A ScriptSig represents a scriptsyg
 type ScriptSig struct {
 	Asm string `json:"asm"`
 	Hex string `json:"hex"`
 }
 
-// Vin represent an IN value
 type Vin struct {
-	Coinbase  string    `json:"coinbase"`
-	Txid      string    `json:"txid"`
-	Vout      int       `json:"vout"`
-	ScriptSig ScriptSig `json:"scriptSig"`
+	Coinbase  string    `json:"coinbase,omitempty"`
+	Txid      string    `json:"txid,omitempty"`
+	Vout      int       `json:"vout,omitempty"`
+	ScriptSig ScriptSig `json:"scriptSig,omitempty"`
+	Value     float64   `json:"value,omitempty"`
+	ValueSat  uint64    `json:"valuesat,omitempty"`
+	Address   string    `json:"address,omitempty"`
 	Sequence  uint32    `json:"sequence"`
 }
 
@@ -23,28 +24,31 @@ type ScriptPubKey struct {
 	Addresses []string `json:"addresses,omitempty"`
 }
 
-// Vout represent an OUT value
 type Vout struct {
 	Value        float64      `json:"value"`
+	ValueSat     uint64       `json:"valuesat"`
 	N            int          `json:"n"`
 	ScriptPubKey ScriptPubKey `json:"scriptPubKey"`
 }
 
-// RawTx represents a raw transaction
 type RawTransaction struct {
-	Hex           string `json:"hex"`
-	Txid          string `json:"txid"`
-	Version       uint32 `json:"version"`
-	LockTime      uint32 `json:"locktime"`
-	Vin           []Vin  `json:"vin"`
-	Vout          []Vout `json:"vout"`
-	BlockHash     string `json:"blockhash,omitempty"`
-	Confirmations uint64 `json:"confirmations,omitempty"`
-	Time          int64  `json:"time,omitempty"`
-	Blocktime     int64  `json:"blocktime,omitempty"`
+	Hex             string `json:"hex"`
+	Txid            string `json:"txid"`
+	Hash            string `json:"hash"`
+	Size            uint64 `json:"size"`
+	VSize           uint64 `json:"vsize"`
+	Version         uint32 `json:"version"`
+	LockTime        uint32 `json:"locktime"`
+	AnonDestination string `json:"anon-destination"`
+	Vin             []Vin  `json:"vin"`
+	Vout            []Vout `json:"vout"`
+	BlockHash       string `json:"blockhash,omitempty"`
+	Height          uint64 `json:"height"`
+	Confirmations   uint64 `json:"confirmations,omitempty"`
+	Time            int64  `json:"time,omitempty"`
+	BlockTime       int64  `json:"blocktime,omitempty"`
 }
 
-// TransactionDetails represents details about a transaction
 type TransactionDetails struct {
 	Account  string  `json:"account"`
 	Address  string  `json:"address,omitempty"`
@@ -53,7 +57,6 @@ type TransactionDetails struct {
 	Fee      float64 `json:"fee,omitempty"`
 }
 
-// Transaction represents a transaction
 type Transaction struct {
 	Amount          float64              `json:"amount"`
 	Account         string               `json:"account,omitempty"`
@@ -72,7 +75,6 @@ type Transaction struct {
 	Hex             string               `json:"hex,omitempty"`
 }
 
-// UTransactionOut represents a unspent transaction out (UTXO)
 type UTransactionOut struct {
 	Bestblock     string       `json:"bestblock"`
 	Confirmations uint32       `json:"confirmations"`
@@ -82,7 +84,6 @@ type UTransactionOut struct {
 	Coinbase      bool         `json:"coinbase"`
 }
 
-// TransactionOutSet represents statistics about the unspent transaction output database
 type TransactionOutSet struct {
 	Height          uint32  `json:"height"`
 	Bestblock       string  `json:"bestblock"`
