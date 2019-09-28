@@ -38,22 +38,22 @@ type SoftFork struct {
 	Version int    `json:"version"`
 	Enforce struct {
 		Status   bool `json:"status"`
-		Found    int  `json:"found"`
-		Required int  `json:"required"`
-		Window   int  `json:"window"`
+		Found    uint `json:"found"`
+		Required uint `json:"required"`
+		Window   uint `json:"window"`
 	}
 	Reject struct {
 		Status   bool `json:"status"`
-		Found    int  `json:"found"`
-		Required int  `json:"required"`
-		Window   int  `json:"window"`
+		Found    uint `json:"found"`
+		Required uint `json:"required"`
+		Window   uint `json:"window"`
 	}
 }
 
 type Bip9SoftFork struct {
 	Id        int    `json:"id"`
 	Status    string `json:"status"`
-	Bit       int    `json:"bit"`
+	Bit       uint   `json:"bit"`
 	StartTime uint64 `json:"starttime"`
 	Timeout   uint64 `json:"timeout"`
 }
