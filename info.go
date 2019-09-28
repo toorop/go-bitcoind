@@ -1,52 +1,59 @@
 package navcoind
 
-// An Info represent a response to getmininginfo
 type Info struct {
-	// The server version
-	Version uint32 `json:"version"`
+	Version         uint32  `json:"version"`
+	Protocolversion uint32  `json:"protocolversion"`
+	Walletversion   uint32  `json:"walletversion"`
+	Balance         float64 `json:"balance"`
+	Blocks          uint32  `json:"blocks"`
+	Timeoffset      int32   `json:"timeoffset"`
+	Connections     uint32  `json:"connections"`
+	Proxy           string  `json:"proxy,omitempty"`
+	Difficulty      float64 `json:"difficulty"`
+	Testnet         bool    `json:"testnet"`
+	Keypoololdest   uint64  `json:"keypoololdest"`
+	KeypoolSize     uint32  `json:"keypoolsize,omitempty"`
+	UnlockedUntil   int64   `json:"unlocked_until,omitempty"`
+	Paytxfee        float64 `json:"paytxfee"`
+	Relayfee        float64 `json:"relayfee"`
+	Errors          string  `json:"errors"`
+}
 
-	// The protocol version
-	Protocolversion uint32 `json:"protocolversion"`
+type BlockchainInfo struct {
+	Chain                string                  `json:"chain"`
+	Blocks               uint64                  `json:"blocks"`
+	Headers              uint64                  `json:"headers"`
+	BestBlockHash        string                  `json:"bestblockhash"`
+	Difficulty           float64                 `json:"difficulty"`
+	MedianTime           uint64                  `json:"mediantime"`
+	VerificationProgress float64                 `json:"verificationprocess"`
+	ChainWork            string                  `json:"chainwork"`
+	Pruned               bool                    `json:"pruned"`
+	SoftForks            []SoftFork              `json:"softforks"`
+	Bip9SoftForks        map[string]Bip9SoftFork `json:"bip9_softforks"`
+}
 
-	// The wallet version
-	Walletversion uint32 `json:"walletversion"`
+type SoftFork struct {
+	Id      string `json:"id"`
+	Version int    `json:"version"`
+	Enforce struct {
+		Status   bool `json:"status"`
+		Found    int  `json:"found"`
+		Required int  `json:"required"`
+		Window   int  `json:"window"`
+	}
+	Reject struct {
+		Status   bool `json:"status"`
+		Found    int  `json:"found"`
+		Required int  `json:"required"`
+		Window   int  `json:"window"`
+	}
+}
 
-	// The total bitcoin balance of the wallet
-	Balance float64 `json:"balance"`
-
-	// The current number of blocks processed in the server
-	Blocks uint32 `json:"blocks"`
-
-	// The time offset
-	Timeoffset int32 `json:"timeoffset"`
-
-	// The number of connections
-	Connections uint32 `json:"connections"`
-
-	// Tthe proxy used by the server
-	Proxy string `json:"proxy,omitempty"`
-
-	// Tthe current difficulty
-	Difficulty float64 `json:"difficulty"`
-
-	// If the server is using testnet or not
-	Testnet bool `json:"testnet"`
-
-	// The timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool
-	Keypoololdest uint64 `json:"keypoololdest"`
-
-	// How many new keys are pre-generated
-	KeypoolSize uint32 `json:"keypoolsize,omitempty"`
-
-	// The timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked
-	UnlockedUntil int64 `json:"unlocked_until,omitempty"`
-
-	// the transaction fee set in btc/kb
-	Paytxfee float64 `json:"paytxfee"`
-
-	// Minimum relay fee for non-free transactions in btc/kb
-	Relayfee float64 `json:"relayfee"`
-
-	//  Any error messages
-	Errors string `json:"errors"`
+type Bip9SoftFork struct {
+	Id        int    `json:"id"`
+	Status    string `json:"status"`
+	Bit       int    `json:"bit"`
+	StartTime uint64 `json:"starttime"`
+	Timeout   uint64 `json:"timeout"`
 }

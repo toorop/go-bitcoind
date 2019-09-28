@@ -265,9 +265,19 @@ func (b *Navcoind) GetHashesPerSec() (hashpersec float64, err error) {
 	return
 }
 
-// GetInfo return result of "getinfo" command (Amazing !)
+// GetInfo return result of "getinfo" command
 func (b *Navcoind) GetInfo() (i Info, err error) {
 	r, err := b.client.call("getinfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &i)
+	return
+}
+
+// GetBlockchainInfo return result of "getblockchaininfo" command
+func (b *Navcoind) GetBlockchainInfo() (i BlockchainInfo, err error) {
+	r, err := b.client.call("getblockchaininfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
