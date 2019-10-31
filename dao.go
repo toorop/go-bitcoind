@@ -10,7 +10,7 @@ type Proposal struct {
 	UserPaidFee         string           `json:"userPaidFee"`
 	PaymentAddress      string           `json:"paymentAddress"`
 	ProposalDuration    uint64           `json:"proposalDuration"`
-	ExpiresON           uint64           `json:"expiresOn"`
+	ExpiresOn           uint64           `json:"expiresOn"`
 	VotesYes            uint             `json:"votesYes"`
 	VotesNo             uint             `json:"votesNo"`
 	VotingCycle         uint             `json:"votingCycle"`
