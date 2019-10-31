@@ -786,3 +786,23 @@ func (b *Navcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) e
 	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
 }
+
+// GetProposal returns information about the proposal with the given hash.
+func (b *Navcoind) GetProposal(hash string) (proposal Proposal, err error) {
+	r, err := b.client.call("getproposal", []string{hash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &proposal)
+	return
+}
+
+// GetPaymentRequest returns information about the proposal with the given hash.
+func (b *Navcoind) GetPaymentRequest(hash string) (paymentRequest PaymentRequest, err error) {
+	r, err := b.client.call("getpaymentrequest", []string{hash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &paymentRequest)
+	return
+}
