@@ -22,6 +22,7 @@ type ScriptPubKey struct {
 	ReqSigs   int      `json:"reqSigs,omitempty"`
 	Type      string   `json:"type"`
 	Addresses []string `json:"addresses,omitempty"`
+	Hash      string   `json:"hash,omitempty"`
 }
 
 type Vout struct {
