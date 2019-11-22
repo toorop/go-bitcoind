@@ -651,7 +651,7 @@ func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minc
 
 // SenManyBCH send multiple times for BCH
 func (b *Bitcoind) SendManyBCH(amounts map[string]float64, minconf uint32, comment string) (txID string, err error) {
-	r, err := b.client.call("sendmany", []interface{}{amounts, minconf, comment})
+	r, err := b.client.call("sendmany", []interface{}{"", amounts, minconf, comment})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
