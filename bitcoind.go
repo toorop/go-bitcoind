@@ -682,6 +682,36 @@ func (b *Bitcoind) SendMany(fromAccount string, amounts map[string]float64, minc
 	return
 }
 
+// SendManySubtractFeeFrom send multiple times (with fee from)
+// https://bitcoincore.org/en/doc/0.16.0/rpc/wallet/sendmany/
+func (b *Bitcoind) SendManySubtractFeeFrom(fromAccount string, amounts map[string]float64, minconf uint32, comment string, feefrom []string) (txID string, err error) {
+	r, err := b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf, comment, feefrom})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txID)
+	return
+}
+
+// SendManyReplacable send multiple times (with fee from)
+// https://bitcoincore.org/en/doc/0.16.0/rpc/wallet/sendmany/
+func (b *Bitcoind) SendManyReplaceable(fromAccount string, amounts map[string]float64, minconf uint32, comment string, feefrom []string, replaceable *bool) (txID string, err error) {
+
+	var r rpcResponse
+
+	if replaceable != nil {
+		r, err = b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf, comment, feefrom})
+	} else {
+		r, err = b.client.call("sendmany", []interface{}{fromAccount, amounts, minconf, comment, feefrom, *replaceable})
+	}
+
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &txID)
+	return
+}
+
 // SendToAddress send an amount to a given address
 func (b *Bitcoind) SendToAddress(toAddress string, amount float64, comment, commentTo string) (txID string, err error) {
 	r, err := b.client.call("sendtoaddress", []interface{}{toAddress, amount, comment, commentTo})
