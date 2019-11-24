@@ -806,3 +806,45 @@ func (b *Bitcoind) WalletPassphraseChange(oldPassphrase, newPassprhase string) e
 	r, err := b.client.call("walletpassphrasechange", []interface{}{oldPassphrase, newPassprhase})
 	return handleError(err, &r)
 }
+
+// estimatesmartfee mode
+// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
+const (
+	ESTIMATE_MODE_UNSET        string = "UNSET"
+	ESTIMATE_MODE_ECONOMICAL   string = "ECONOMICAL"
+	ESTIMATE_MODE_CONSERVATIVE string = "CONSERVATIVE"
+)
+
+// EstimateSmartFeeResult result for call estimatesmartfee
+// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
+type EstimateSmartFeeResult struct {
+	FeeRate float64  `json:"feerate"`
+	Errors  []string `json:"errors"`
+	Blocks  int      `json:"blocks"`
+}
+
+// EstimateSmartFee stimates the approximate fee per kilobyte needed for a transaction..
+// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
+func (b *Bitcoind) EstimateSmartFee(minconf int) (ret EstimateSmartFeeResult, err error) {
+
+	r, err := b.client.call("estimatesmartfee", []interface{}{minconf})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(r.Result, &ret)
+	return
+}
+
+// EstimateSmartFee stimates the approximate fee per kilobyte needed for a transaction..
+// https://bitcoincore.org/en/doc/0.16.0/rpc/util/estimatesmartfee/
+func (b *Bitcoind) EstimateSmartFeeWithMode(minconf int, mode string) (ret EstimateSmartFeeResult, err error) {
+
+	r, err := b.client.call("estimatesmartfee", []interface{}{minconf, mode})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+
+	err = json.Unmarshal(r.Result, &ret)
+	return
+}
