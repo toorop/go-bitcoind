@@ -37,9 +37,10 @@ var _ = Describe("Helpers", func() {
 
 		// RPC error is not null
 		Context("RPC error", func() {
-			rpcError := make(map[string]interface{})
-			rpcError["code"] = 6.32
-			rpcError["message"] = "Fake error"
+			rpcError := &RPCError{
+				Code:    6,
+				Message: "Fake error",
+			}
 			response := rpcResponse{
 				Id:     1212,
 				Result: []byte("{}"),
