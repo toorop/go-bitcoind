@@ -848,3 +848,14 @@ func (b *Bitcoind) EstimateSmartFeeWithMode(minconf int, mode string) (ret Estim
 	err = json.Unmarshal(r.Result, &ret)
 	return
 }
+
+// GetWalletInfo - Returns an object containing various wallet state info.
+// https://bitcoincore.org/en/doc/0.16.0/rpc/wallet/getwalletinfo/
+func (b *Bitcoind) GetWalletInfo() (i WalletInfo, err error) {
+	r, err := b.client.call("getwalletinfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &i)
+	return
+}
