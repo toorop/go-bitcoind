@@ -24,6 +24,7 @@ type PaymentRequest struct {
 	Version             uint32 `json:"version"`
 	Hash                string `json:"hash"`
 	BlockHash           string `json:"blockHash"`
+	ProposalHash        string `json:"proposalHash"`
 	Description         string `json:"description"`
 	RequestedAmount     string `json:"requestedAmount"`
 	VotesYes            uint   `json:"votesYes"`
