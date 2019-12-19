@@ -797,6 +797,16 @@ func (b *Navcoind) GetProposal(hash string) (proposal Proposal, err error) {
 	return
 }
 
+// CfundStats Returns statistics about the community fund.
+func (b *Navcoind) CfundStats(hash string) (cfundStats CFundStats, err error) {
+	r, err := b.client.call("cfundstats", []string{hash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &cfundStats)
+	return
+}
+
 // GetPaymentRequest returns information about the proposal with the given hash.
 func (b *Navcoind) GetPaymentRequest(hash string) (paymentRequest PaymentRequest, err error) {
 	r, err := b.client.call("getpaymentrequest", []string{hash})
