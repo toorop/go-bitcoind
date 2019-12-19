@@ -798,8 +798,8 @@ func (b *Navcoind) GetProposal(hash string) (proposal Proposal, err error) {
 }
 
 // CfundStats Returns statistics about the community fund.
-func (b *Navcoind) CfundStats(hash string) (cfundStats CFundStats, err error) {
-	r, err := b.client.call("cfundstats", []string{hash})
+func (b *Navcoind) CfundStats() (cfundStats CFundStats, err error) {
+	r, err := b.client.call("cfundstats", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
