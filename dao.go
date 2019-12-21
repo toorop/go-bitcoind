@@ -7,6 +7,7 @@ type Proposal struct {
 	Description         string           `json:"description"`
 	RequestedAmount     string           `json:"requestedAmount"`
 	NotPaidYet          string           `json:"notPaidYet"`
+	NotRequestedYet     string           `json:"notRequestedYet"`
 	UserPaidFee         string           `json:"userPaidFee"`
 	PaymentAddress      string           `json:"paymentAddress"`
 	ProposalDuration    uint64           `json:"proposalDuration"`
@@ -24,7 +25,7 @@ type PaymentRequest struct {
 	Version             uint32 `json:"version"`
 	Hash                string `json:"hash"`
 	BlockHash           string `json:"blockHash"`
-	ProposalHash        string `json:"proposalHash"`
+	ProposalHash        string `json:"proposalHash,omitempty"`
 	Description         string `json:"description"`
 	RequestedAmount     string `json:"requestedAmount"`
 	VotesYes            uint   `json:"votesYes"`
