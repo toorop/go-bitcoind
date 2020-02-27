@@ -28,31 +28,34 @@ type Block struct {
 }
 
 type BlockHeader struct {
-	Hash              string      `json:"hash"`
-	Confirmations     uint64      `json:"confirmations"`
-	Height            uint64      `json:"height"`
-	Version           uint32      `json:"version"`
-	VersionHex        string      `json:"versionHex"`
-	MerkleRoot        string      `json:"merkleroot"`
-	Time              int64       `json:"time"`
-	MedianTime        int64       `json:"mediantime"`
-	Mint              float64     `json:"mint"`
-	Nonce             uint64      `json:"nonce"`
-	Bits              string      `json:"bits"`
-	Difficulty        float64     `json:"difficulty"`
-	ChainWork         string      `json:"chainwork"`
-	NcfSupply         string      `json:"ncfsupply"`
-	NcfLocked         string      `json:"ncflocked"`
-	Flags             string      `json:"flags"`
-	ProofHash         string      `json:"proofhash"`
-	EntropyBit        int64       `json:"entropybit"`
-	Modifier          string      `json:"modifier"`
-	CfundVotes        []CfundVote `json:"cfund_votes"`
-	PreviousBlockHash string      `json:"previousblockhash"`
-	NextBlockHash     string      `json:"nextblockhash"`
+	Hash              string    `json:"hash"`
+	Confirmations     uint64    `json:"confirmations"`
+	Height            uint64    `json:"height"`
+	Version           uint32    `json:"version"`
+	VersionHex        string    `json:"versionHex"`
+	MerkleRoot        string    `json:"merkleroot"`
+	Time              int64     `json:"time"`
+	MedianTime        int64     `json:"mediantime"`
+	Mint              float64   `json:"mint"`
+	Nonce             uint64    `json:"nonce"`
+	Bits              string    `json:"bits"`
+	Difficulty        float64   `json:"difficulty"`
+	ChainWork         string    `json:"chainwork"`
+	NcfSupply         string    `json:"ncfsupply"`
+	NcfLocked         string    `json:"ncflocked"`
+	Flags             string    `json:"flags"`
+	ProofHash         string    `json:"proofhash"`
+	EntropyBit        int64     `json:"entropybit"`
+	Modifier          string    `json:"modifier"`
+	CfundVotes        []DaoVote `json:"cfund_votes"`
+	CfundRequestVotes []DaoVote `json:"cfund_request_votes"`
+	DaoSupport        []DaoVote `json:"dao_support"`
+	DaoVotes          []DaoVote `json:"dao_votes"`
+	PreviousBlockHash string    `json:"previousblockhash"`
+	NextBlockHash     string    `json:"nextblockhash"`
 }
 
-type CfundVote struct {
+type DaoVote struct {
 	Hash string `json:"hash"`
 	Vote int    `json:"vote"`
 }
