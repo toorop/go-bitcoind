@@ -102,24 +102,6 @@ func (b *Navcoind) GetBalance(account string, minconf uint64) (balance float64, 
 	return
 }
 
-type BlockHeader struct {
-	Hash              string
-	Confirmations     int
-	Height            int
-	Version           uint32
-	VersionHex        string
-	Merkleroot        string
-	Time              int64
-	Mediantime        int64
-	Nonce             uint32
-	Bits              uint32
-	Difficulty        float64
-	Chainwork         string
-	Txes              int    `json:"nTx"`
-	Previousblockhash string `json:"omitempty"`
-	Nextblockhash     string `json:"omitempty"`
-}
-
 func (b *Navcoind) GetBlockheader(blockHash string) (*BlockHeader, error) {
 	r, err := b.client.call("getblockheader", []string{blockHash})
 	if err = handleError(err, &r); err != nil {
