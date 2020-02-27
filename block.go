@@ -49,7 +49,7 @@ type BlockHeader struct {
 	Modifier          string    `json:"modifier"`
 	CfundVotes        []DaoVote `json:"cfund_votes"`
 	CfundRequestVotes []DaoVote `json:"cfund_request_votes"`
-	DaoSupport        []DaoVote `json:"dao_support"`
+	DaoSupport        []string  `json:"dao_support"`
 	DaoVotes          []DaoVote `json:"dao_votes"`
 	PreviousBlockHash string    `json:"previousblockhash"`
 	NextBlockHash     string    `json:"nextblockhash"`
