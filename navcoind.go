@@ -798,3 +798,13 @@ func (b *Navcoind) GetPaymentRequest(hash string) (paymentRequest PaymentRequest
 	err = json.Unmarshal(r.Result, &paymentRequest)
 	return
 }
+
+// GetConsultation returns information about the consultation with the given hash.
+func (b *Navcoind) GetConsultation(hash string) (consultation Consultation, err error) {
+	r, err := b.client.call("getconsultation", []string{hash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &consultation)
+	return
+}
