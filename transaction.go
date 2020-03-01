@@ -40,7 +40,8 @@ type RawTransaction struct {
 	VSize           uint64 `json:"vsize"`
 	Version         uint32 `json:"version"`
 	LockTime        uint32 `json:"locktime"`
-	AnonDestination string `json:"anon-destination"`
+	Strdzeel        string `json:"strdzeel,omitempty"`
+	AnonDestination string `json:"anon-destination,omitempty"`
 	Vin             []Vin  `json:"vin"`
 	Vout            []Vout `json:"vout"`
 	BlockHash       string `json:"blockhash,omitempty"`
