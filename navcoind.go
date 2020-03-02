@@ -799,6 +799,16 @@ func (b *Navcoind) GetPaymentRequest(hash string) (paymentRequest PaymentRequest
 	return
 }
 
+// GetConsensusParameters returns information about the consensus parameters
+func (b *Navcoind) GetConsensusParameters(extended bool) (consensusParameters []ConsensusParameter, err error) {
+	r, err := b.client.call("getconsensusparameters", []interface{}{strconv.FormatBool(extended)})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &consensusParameters)
+	return
+}
+
 // GetConsultation returns information about the consultation with the given hash.
 func (b *Navcoind) GetConsultation(hash string) (consultation Consultation, err error) {
 	r, err := b.client.call("getconsultation", []string{hash})

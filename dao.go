@@ -53,12 +53,20 @@ type Consensus struct {
 	ProposalMinimalFee                  float64 `json:"proposalMinimalFee"`
 }
 
+type ConsensusParameter struct {
+	Id          int    `json:"id"`
+	Description string `json:"desc"`
+	Type        int    `json:"type"`
+	Value       int    `json:"value"`
+}
+
 type Consultation struct {
 	Version             uint32    `json:"version"`
 	Hash                string    `json:"hash"`
 	BlockHash           string    `json:"blockhash"`
 	Question            string    `json:"question"`
 	Support             int       `json:"support"`
+	Abstain             int       `json:"abstain"`
 	Answers             []*Answer `json:"answers"`
 	Min                 int       `json:"min"`
 	Max                 int       `json:"max"`
@@ -69,10 +77,8 @@ type Consultation struct {
 }
 
 type Answer struct {
-	Abstain int `json:"abstain,omitempty"`
-
-	Version uint32 `json:"version,omitempty"`
-	String  string `json:"string,omitempty"`
+	Version uint32 `json:"version"`
+	String  string `json:"string"`
 	Support int    `json:"support,omitempty"`
 	Votes   int    `json:"votes,omitempty"`
 	Status  string `json:"status,omitempty"`
