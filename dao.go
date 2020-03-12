@@ -77,12 +77,14 @@ type Consultation struct {
 }
 
 type Answer struct {
-	Version uint32 `json:"version"`
-	Answer  string `json:"answer"`
-	Support int    `json:"support,omitempty"`
-	Votes   int    `json:"votes,omitempty"`
-	Status  string `json:"status,omitempty"`
-	State   int    `json:"state,omitempty"`
-	Parent  string `json:"parent,omitempty"`
-	Hash    string `json:"hash,omitempty"`
+	Version             uint32 `json:"version"`
+	Answer              string `json:"answer"`
+	Support             int    `json:"support,omitempty"`
+	Votes               int    `json:"votes,omitempty"`
+	Status              string `json:"status,omitempty"`
+	State               int    `json:"state,omitempty"`
+	StateChangedOnBlock string `json:"stateChangedOnBlock,omitempty"`
+	TxBlockHash         string `json:"txblockhash,omitempty"`
+	Parent              string `json:"parent,omitempty"`
+	Hash                string `json:"hash,omitempty"`
 }
