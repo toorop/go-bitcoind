@@ -78,7 +78,7 @@ type Consultation struct {
 
 type Answer struct {
 	Version uint32 `json:"version"`
-	String  string `json:"string"`
+	Answer  string `json:"answer"`
 	Support int    `json:"support,omitempty"`
 	Votes   int    `json:"votes,omitempty"`
 	Status  string `json:"status,omitempty"`
