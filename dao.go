@@ -61,30 +61,37 @@ type ConsensusParameter struct {
 }
 
 type Consultation struct {
-	Version             uint32    `json:"version"`
-	Hash                string    `json:"hash"`
-	BlockHash           string    `json:"blockhash"`
-	Question            string    `json:"question"`
-	Support             int       `json:"support"`
-	Abstain             int       `json:"abstain"`
-	Answers             []*Answer `json:"answers"`
-	Min                 int       `json:"min"`
-	Max                 int       `json:"max"`
-	VotingCycle         int       `json:"votingCycle"`
-	Status              string    `json:"status"`
-	State               int       `json:"state"`
-	StateChangedOnBlock string    `json:"stateChangedOnBlock"`
+	Version                  uint32         `json:"version"`
+	Hash                     string         `json:"hash"`
+	BlockHash                string         `json:"blockhash"`
+	Question                 string         `json:"question"`
+	Support                  int            `json:"support"`
+	Abstain                  int            `json:"abstain"`
+	Answers                  []*Answer      `json:"answers"`
+	Min                      int            `json:"min"`
+	Max                      int            `json:"max"`
+	VotingCyclesFromCreation int            `json:"votingCyclesFromCreation"`
+	VotingCycleForState      Cycle          `json:"votingCycleForState"`
+	Status                   string         `json:"status"`
+	State                    int            `json:"state"`
+	StateChangedOnBlock      string         `json:"stateChangedOnBlock"`
+	MapState                 map[string]int `json:"mapState"`
+}
+
+type Cycle struct {
+	Current int `json:"current"`
+	Max     int `json:"max"`
 }
 
 type Answer struct {
 	Version             uint32 `json:"version"`
 	Answer              string `json:"answer"`
-	Support             int    `json:"support,omitempty"`
-	Votes               int    `json:"votes,omitempty"`
-	Status              string `json:"status,omitempty"`
-	State               int    `json:"state,omitempty"`
-	StateChangedOnBlock string `json:"stateChangedOnBlock,omitempty"`
-	TxBlockHash         string `json:"txblockhash,omitempty"`
-	Parent              string `json:"parent,omitempty"`
-	Hash                string `json:"hash,omitempty"`
+	Support             int    `json:"support"`
+	Votes               int    `json:"votes"`
+	Status              string `json:"status"`
+	State               int    `json:"state"`
+	StateChangedOnBlock string `json:"stateChangedOnBlock"`
+	TxBlockHash         string `json:"txblockhash"`
+	Parent              string `json:"parent"`
+	Hash                string `json:"hash"`
 }
