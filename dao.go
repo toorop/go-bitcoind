@@ -84,14 +84,15 @@ type Cycle struct {
 }
 
 type Answer struct {
-	Version             uint32 `json:"version"`
-	Answer              string `json:"answer"`
-	Support             int    `json:"support"`
-	Votes               int    `json:"votes"`
-	Status              string `json:"status"`
-	State               int    `json:"state"`
-	StateChangedOnBlock string `json:"stateChangedOnBlock"`
-	TxBlockHash         string `json:"txblockhash"`
-	Parent              string `json:"parent"`
-	Hash                string `json:"hash"`
+	Version             uint32         `json:"version"`
+	Answer              string         `json:"answer"`
+	Support             int            `json:"support"`
+	Votes               int            `json:"votes"`
+	Status              string         `json:"status"`
+	State               int            `json:"state"`
+	StateChangedOnBlock string         `json:"stateChangedOnBlock"`
+	TxBlockHash         string         `json:"txblockhash"`
+	Parent              string         `json:"parent"`
+	Hash                string         `json:"hash"`
+	MapState            map[string]int `json:"mapState"`
 }
