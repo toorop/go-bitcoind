@@ -75,7 +75,7 @@ type Consultation struct {
 	Status                   string         `json:"status"`
 	State                    int            `json:"state"`
 	StateChangedOnBlock      string         `json:"stateChangedOnBlock"`
-	MapState                 map[string]int `json:"mapState"`
+	MapState                 map[int]string `json:"mapState"`
 }
 
 type Cycle struct {
@@ -94,5 +94,5 @@ type Answer struct {
 	TxBlockHash         string         `json:"txblockhash"`
 	Parent              string         `json:"parent"`
 	Hash                string         `json:"hash"`
-	MapState            map[string]int `json:"mapState"`
+	MapState            map[int]string `json:"mapState"`
 }
