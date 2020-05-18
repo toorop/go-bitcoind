@@ -13,6 +13,7 @@ type Proposal struct {
 	ProposalDuration    uint64           `json:"proposalDuration"`
 	ExpiresOn           uint64           `json:"expiresOn"`
 	VotesYes            uint             `json:"votesYes"`
+	VotesAbs            uint             `json:"votesAbs"`
 	VotesNo             uint             `json:"votesNo"`
 	VotingCycle         uint             `json:"votingCycle"`
 	Status              string           `json:"status"`
@@ -29,6 +30,7 @@ type PaymentRequest struct {
 	Description         string `json:"description"`
 	RequestedAmount     string `json:"requestedAmount"`
 	VotesYes            uint   `json:"votesYes"`
+	VotesAbs            uint   `json:"votesAbs"`
 	VotesNo             uint   `json:"votesNo"`
 	VotingCycle         uint   `json:"votingCycle"`
 	Status              string `json:"status"`
