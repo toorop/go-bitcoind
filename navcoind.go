@@ -4,6 +4,7 @@ package navcoind
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -87,6 +88,18 @@ func (b *Navcoind) GetAddressesByAccount(account string) (addresses []string, er
 		return
 	}
 	err = json.Unmarshal(r.Result, &addresses)
+	return
+}
+
+func (b *Navcoind) GetAddressBalance(address string) (addresses *AddressBalance, err error) {
+	request := fmt.Sprintf("{\"addresses\": [\"%s\"]}", address)
+
+	r, err := b.client.call("getaddressbalance", []string{request})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &addresses)
+
 	return
 }
 
