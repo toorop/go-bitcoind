@@ -234,7 +234,7 @@ var _ = Describe("Navcoind", func() {
 					Size:          348678,
 					Height:        301043,
 					Version:       2,
-					Merkleroot:    "7867189c03d63d73624b2fab05009a270e15a53611a9efb6fac8fa61981229c9",
+					MerkleRoot:    "7867189c03d63d73624b2fab05009a270e15a53611a9efb6fac8fa61981229c9",
 					Tx: []string{
 						"d5de3d0622f7379d3e5afe67ff42336854e6b15a77e241fc13e77458bde32603",
 						"df8d461f53d509f0d0951df7251b5c63aa1c2380ca07ccb39d2cdd39338b2bef",
@@ -760,9 +760,9 @@ var _ = Describe("Navcoind", func() {
 					Nonce:             29860925,
 					Bits:              "187c3053",
 					Difficulty:        8.8534163091278e+09,
-					Chainwork:         "0000000000000000000000000000000000000000000062953a07577418d105fc",
-					Previousblockhash: "00000000000000001da7dd6cb6599cf16af1fbf60e0430305194f62404395856",
-					Nextblockhash:     "00000000000000004a5e2944fd7a0598f33749af168feeb2605d1606a78880d2",
+					ChainWork:         "0000000000000000000000000000000000000000000062953a07577418d105fc",
+					PreviousBlockHash: "00000000000000001da7dd6cb6599cf16af1fbf60e0430305194f62404395856",
+					NextBlockHash:     "00000000000000004a5e2944fd7a0598f33749af168feeb2605d1606a78880d2",
 				}))
 			})
 		})
