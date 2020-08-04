@@ -1,4 +1,4 @@
-module github.com/vpashka/go-bitcoind
+module github.com/toorop/go-bitcoind
 
 go 1.13
 
