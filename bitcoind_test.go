@@ -1283,6 +1283,53 @@ var _ = Describe("Bitcoind", func() {
 		})
 	})
 
+	Describe("Testing GetTransaction with label", func() {
+		Context("when success", func() {
+			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"result":{"amount":0.00010000,"confirmations":0,"txid":"a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515","walletconflicts":[],"time":1400652519,"timereceived":1400652519,"details":[{"account":"tests","address":"1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy","category":"receive","amount":0.00010000,"label":"some-detail"}],"hex":"0100000001445a669dcbd348cf67608c4569fcc19cd00e9034974fa7532241486ce8e7dbde010000006b483045022100cc82d6200851da906ca7acfbd723abefe7212be219e4356244e114425b3c71a902207decd1eedb2fe9e025249abab202b7efe249006aa19685f0c6317bc01c4c749c01210261bb8d48877f353d13bb376dbe20f736bb74f7c9b351b0b2724f71da7d8a1a35ffffffff0210270000000000001976a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac89220c04000000001976a914b70a330f18a5013c6ac0f3e6cb2d2d0e5ad7649a88ac00000000"},"error":null,"id":1400653137726066857}`)
+			})
+			ts, host, port, err := getNewTestServer(handler)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer ts.Close()
+			bitcoindClient, _ := New(host, port, "x", "fake", false)
+			transaction, err := bitcoindClient.GetTransaction("a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515")
+			It("should not error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("should return Transaction", func() {
+				Expect(transaction).Should(Equal(Transaction{
+					Amount:          0.0001,
+					Account:         "",
+					Address:         "",
+					Category:        "",
+					Fee:             0,
+					Confirmations:   0,
+					BlockHash:       "",
+					BlockIndex:      0,
+					BlockTime:       0,
+					TxID:            "a1b7093d041bc1b763ba1ad894d2bd5376b38e6c7369613684e7140e8d9f7515",
+					WalletConflicts: []string{},
+					Time:            1400652519,
+					TimeReceived:    1400652519,
+					Details: []TransactionDetails{
+						{
+							Account:  "tests",
+							Address:  "1Pyizp4HK7Bfz7CdbSwHHtprk7Ghumhxmy",
+							Category: "receive",
+							Amount:   0.0001,
+							Fee:      0,
+							Label:    "some-detail",
+						},
+					},
+					Hex: "0100000001445a669dcbd348cf67608c4569fcc19cd00e9034974fa7532241486ce8e7dbde010000006b483045022100cc82d6200851da906ca7acfbd723abefe7212be219e4356244e114425b3c71a902207decd1eedb2fe9e025249abab202b7efe249006aa19685f0c6317bc01c4c749c01210261bb8d48877f353d13bb376dbe20f736bb74f7c9b351b0b2724f71da7d8a1a35ffffffff0210270000000000001976a914fc0d1e43cea1c5df928971f8add5d67ce431300388ac89220c04000000001976a914b70a330f18a5013c6ac0f3e6cb2d2d0e5ad7649a88ac00000000",
+				}))
+			})
+		})
+	})
+
 	Describe("Testing GetTxOut", func() {
 		Context("when success", func() {
 			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
