@@ -51,6 +51,7 @@ type TransactionDetails struct {
 	Category string  `json:"category"`
 	Amount   float64 `json:"amount"`
 	Fee      float64 `json:"fee,omitempty"`
+	Label    string  `json:"label,omitempty"`
 }
 
 // Transaction represents a transaction
