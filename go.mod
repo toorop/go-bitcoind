@@ -1,4 +1,4 @@
-module github.com/Dexconv/go-bitcoind
+module github.com/toroop/go-bitcoind
 
 go 1.18
 
