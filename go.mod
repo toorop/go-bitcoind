@@ -1,4 +1,4 @@
-module github.com/toroop/go-bitcoind
+module github.com/toorop/go-bitcoind
 
 go 1.18
 
