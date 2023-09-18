@@ -44,3 +44,9 @@ type Block struct {
 	// The hash of the next block
 	Nextblockhash string `json:"nextblockhash"`
 }
+
+// Represents a verbose 2 block
+type BlockV2 struct {
+	Block
+	Tx []RawTransaction `json:"tx"`
+}
