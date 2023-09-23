@@ -278,13 +278,14 @@ type MemPoolInfo struct {
 }
 
 // GetMemPoolInfo returns an object containing mem pool info
-func (b *Bitcoind) GetMemPoolInfo() (memPoolInfo *MemPoolInfo, err error) {
+func (b *Bitcoind) GetMemPoolInfo() (*MemPoolInfo, error) {
 	r, err := b.client.call("getmempoolinfo", nil)
 	if err = handleError(err, &r); err != nil {
-		return
+		return nil, err
 	}
+	memPoolInfo := &MemPoolInfo{}
 	err = json.Unmarshal(r.Result, memPoolInfo)
-	return
+	return memPoolInfo, err
 }
 
 // See https://developer.bitcoin.org/reference/rpc/getblockchaininfo.html
@@ -307,13 +308,14 @@ type BlockChainInfo struct {
 	Warnings             string                 `json:"warnings"`
 }
 
-func (b *Bitcoind) GetBlockchainInfo() (blockChainInfo *BlockChainInfo, err error) {
+func (b *Bitcoind) GetBlockchainInfo() (*BlockChainInfo, error) {
 	r, err := b.client.call("getblockchaininfo", nil)
 	if err = handleError(err, &r); err != nil {
-		return
+		return nil, err
 	}
+	blockChainInfo := &BlockChainInfo{}
 	err = json.Unmarshal(r.Result, blockChainInfo)
-	return
+	return blockChainInfo, err
 }
 
 // See https://developer.bitcoin.org/reference/rpc/getnetworkinfo.html
@@ -350,13 +352,14 @@ type Network struct {
 	ProxyRandomizeCredentials bool   `json:"proxy_randomize_credentials"`
 }
 
-func (b *Bitcoind) GetNetworkInfo() (networkInfo *NetworkInfo, err error) {
+func (b *Bitcoind) GetNetworkInfo() (*NetworkInfo, error) {
 	r, err := b.client.call("getnetworkinfo", nil)
 	if err = handleError(err, &r); err != nil {
-		return
+		return nil, err
 	}
+	networkInfo := &NetworkInfo{}
 	err = json.Unmarshal(r.Result, &networkInfo)
-	return
+	return networkInfo, err
 }
 
 // See https://developer.bitcoin.org/reference/rpc/getwalletinfo.html
@@ -382,13 +385,14 @@ type Scanning struct {
 	Progress int64 `json:"progress"`
 }
 
-func (b *Bitcoind) GetWalletInfo() (networkInfo *WalletInfo, err error) {
+func (b *Bitcoind) GetWalletInfo() (*WalletInfo, error) {
 	r, err := b.client.call("getwalletinfo", nil)
 	if err = handleError(err, &r); err != nil {
-		return
+		return nil, err
 	}
-	err = json.Unmarshal(r.Result, &networkInfo)
-	return
+	walletInfo := &WalletInfo{}
+	err = json.Unmarshal(r.Result, &walletInfo)
+	return walletInfo, err
 }
 
 // GetMiningInfo returns an object containing mining-related information
