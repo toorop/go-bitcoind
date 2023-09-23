@@ -2,13 +2,14 @@ package bitcoind
 
 import (
 	"fmt"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
 	"strings"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 func getNewTestServer(handler http.Handler) (testServer *httptest.Server, host string, port int, err error) {
@@ -892,44 +893,6 @@ var _ = Describe("Bitcoind", func() {
 			})
 			It("should return int 0", func() {
 				Expect(generate).Should(BeNumerically("==", 0))
-			})
-		})
-	})
-
-	Describe("Testing GetInfo", func() {
-		Context("when success", func() {
-			handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				fmt.Fprintln(w, `{"result":{"version":99900,"protocolversion":70002,"walletversion":60000,"balance":0.00000000,"blocks":301573,"timeoffset":0,"connections":61,"proxy":"","difficulty":8853416309.12779999,"testnet":false,"keypoololdest":1399795067,"keypoolsize":101,"unlocked_until":1400519823,"paytxfee":0.00000000,"relayfee":0.00001000,"errors":"This is a pre-release test build - use at your own risk - do not use for mining or merchant applications"},"error":null,"id":1400516286899658573}`)
-			})
-			ts, host, port, err := getNewTestServer(handler)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			defer ts.Close()
-			bitcoindClient, _ := New(host, port, "x", "fake", false)
-			rinfo, err := bitcoindClient.GetInfo()
-			It("should not error", func() {
-				Expect(err).NotTo(HaveOccurred())
-			})
-			It("should return", func() {
-				Expect(rinfo).Should(Equal(Info{
-					Version:         99900,
-					Protocolversion: 70002,
-					Walletversion:   60000,
-					Balance:         0,
-					Blocks:          301573,
-					Timeoffset:      0,
-					Connections:     61,
-					Proxy:           "",
-					Difficulty:      8.8534163091278e+09,
-					Testnet:         false,
-					Keypoololdest:   1399795067,
-					KeypoolSize:     101,
-					UnlockedUntil:   1400519823,
-					Paytxfee:        0,
-					Relayfee:        1e-05,
-					Errors:          "This is a pre-release test build - use at your own risk - do not use for mining or merchant applications",
-				}))
 			})
 		})
 	})

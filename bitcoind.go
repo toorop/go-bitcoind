@@ -91,8 +91,8 @@ func (b *Bitcoind) GetAddressesByAccount(account string) (addresses []string, er
 }
 
 // GetBalance return the balance of the server or of a specific account
-//If [account] is "", returns the server's total available balance.
-//If [account] is specified, returns the balance in the account
+// If [account] is "", returns the server's total available balance.
+// If [account] is specified, returns the balance in the account
 func (b *Bitcoind) GetBalance(account string, minconf uint64) (balance float64, err error) {
 	r, err := b.client.call("getbalance", []interface{}{account, minconf})
 	if err = handleError(err, &r); err != nil {
@@ -129,7 +129,7 @@ func (b *Bitcoind) GetBlockheader(blockHash string) (*BlockHeader, error) {
 	var blockHeader BlockHeader
 	err = json.Unmarshal(r.Result, &blockHeader)
 
-	return &blockHeader, nil
+	return &blockHeader, err
 }
 
 // GetBestBlockhash returns the hash of the best (tip) block in the longest block chain.
@@ -265,13 +265,128 @@ func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
 	return
 }
 
-// GetInfo return result of "getinfo" command (Amazing !)
-func (b *Bitcoind) GetInfo() (i Info, err error) {
-	r, err := b.client.call("getinfo", nil)
+// See https://developer.bitcoin.org/reference/rpc/getmempoolinfo.html
+type MemPoolInfo struct {
+	Loaded           bool  `json:"loaded"`
+	Size             int64 `json:"size"`
+	Bytes            int64 `json:"bytes"`
+	Usage            int64 `json:"usage"`
+	MaxMemPool       int64 `json:"maxmempool"`
+	MemPoolMinFee    int64 `json:"mempoolminfee"`
+	MinRelayTxFee    int64 `json:"minrelaytxfee"`
+	UnbroadcastCount int64 `json:"unbroadcastcount"`
+}
+
+// GetMemPoolInfo returns an object containing mem pool info
+func (b *Bitcoind) GetMemPoolInfo() (memPoolInfo *MemPoolInfo, err error) {
+	r, err := b.client.call("getmempoolinfo", nil)
 	if err = handleError(err, &r); err != nil {
 		return
 	}
-	err = json.Unmarshal(r.Result, &i)
+	err = json.Unmarshal(r.Result, memPoolInfo)
+	return
+}
+
+// See https://developer.bitcoin.org/reference/rpc/getblockchaininfo.html
+type BlockChainInfo struct {
+	Chain                string                 `json:"chain"`
+	Blocks               int64                  `json:"blocks"`
+	Headers              int64                  `json:"headers"`
+	BestBlockHash        string                 `json:"bestblockhash"`
+	Difficulty           int64                  `json:"difficulty"`
+	Mediantime           int64                  `json:"mediantime"`
+	VerificationProgress int64                  `json:"verificationprogress"`
+	InitialBlockDownload bool                   `json:"initialblockdownload"`
+	Chainwork            string                 `json:"chainwork"`
+	SizeOnDisk           int64                  `json:"size_on_disk"`
+	Pruned               bool                   `json:"pruned"`
+	PruneHeight          int64                  `json:"pruneheight"`
+	AutomaticPruning     bool                   `json:"automatic_pruning"`
+	PruneTargetSize      int64                  `json:"prune_target_size"`
+	Softforks            map[string]interface{} `json:"softforks"`
+	Warnings             string                 `json:"warnings"`
+}
+
+func (b *Bitcoind) GetBlockchainInfo() (blockChainInfo *BlockChainInfo, err error) {
+	r, err := b.client.call("getblockchaininfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, blockChainInfo)
+	return
+}
+
+// See https://developer.bitcoin.org/reference/rpc/getnetworkinfo.html
+type NetworkInfo struct {
+	Version            int64          `json:"version"`
+	Subversion         string         `json:"subversion"`
+	LocalServices      string         `json:"localservices"`
+	LocalServicesNames []string       `json:"localservicesnames"`
+	LocalRelay         bool           `json:"localrelay"`
+	Timeoffset         int64          `json:"timeoffset"`
+	Connections        int64          `json:"connections"`
+	ConnectionsIn      int64          `json:"connections_in"`
+	ConnectionsOut     int64          `json:"connections_out"`
+	NetworkActive      bool           `json:"networkactive"`
+	Networks           []Network      `json:"networks"`
+	RelayFee           int64          `json:"relayfee"`
+	IncrementalFee     int64          `json:"incrementalfee"`
+	LocalAddresses     []LocalAddress `json:"localaddresses"`
+	Warnings           string         `json:"warnings"`
+}
+
+type LocalAddress struct {
+	Address string `json:"address"`
+	Port    int64  `json:"port"`
+	Score   int64  `json:"score"`
+}
+
+type Network struct {
+	Name                      string `json:"name"`
+	Limited                   bool   `json:"limited"`
+	Reachable                 bool   `json:"reachable"`
+	Proxy                     string `json:"proxy"`
+	ProxyRandomizeCredentials bool   `json:"proxy_randomize_credentials"`
+}
+
+func (b *Bitcoind) GetNetworkInfo() (networkInfo *NetworkInfo, err error) {
+	r, err := b.client.call("getnetworkinfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &networkInfo)
+	return
+}
+
+// See https://developer.bitcoin.org/reference/rpc/getwalletinfo.html
+type WalletInfo struct {
+	WalletName            string   `json:"walletname"`
+	WalletVersion         int64    `json:"walletversion"`
+	Format                string   `json:"format"`
+	TxCount               int64    `json:"txcount"`
+	KeyPoolOldest         int64    `json:"keypoololdest"`
+	KeyPoolSize           int64    `json:"keypoolsize"`
+	KeyPoolSizeHdInternal int64    `json:"keypoolsize_hd_internal"`
+	UnlockedUntil         int64    `json:"unlocked_until"`
+	PayTxFee              int64    `json:"paytxfee"`
+	HdSeedId              string   `json:"hdseedid"`
+	PrivateKeysEnabled    bool     `json:"private_keys_enabled"`
+	AvoidReuse            bool     `json:"avoid_reuse"`
+	Scanning              Scanning `json:"scanning"`
+	Descriptors           bool     `json:"descriptors"`
+}
+
+type Scanning struct {
+	Duration int64 `json:"duration"`
+	Progress int64 `json:"progress"`
+}
+
+func (b *Bitcoind) GetWalletInfo() (networkInfo *WalletInfo, err error) {
+	r, err := b.client.call("getwalletinfo", nil)
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &networkInfo)
 	return
 }
 
@@ -289,7 +404,7 @@ func (b *Bitcoind) GetMiningInfo() (miningInfo MiningInfo, err error) {
 func (b *Bitcoind) GetNewAddress(account ...string) (addr string, err error) {
 	// 0 or 1 account
 	if len(account) > 1 {
-		err = errors.New("Bad parameters for GetNewAddress: you can set 0 or 1 account")
+		err = errors.New("bad parameters for GetNewAddress: you can set 0 or 1 account")
 		return
 	}
 	r, err := b.client.call("getnewaddress", account)
@@ -315,7 +430,7 @@ func (b *Bitcoind) GetPeerInfo() (peerInfo []Peer, err error) {
 func (b *Bitcoind) GetRawChangeAddress(account ...string) (rawAddress string, err error) {
 	// 0 or 1 account
 	if len(account) > 1 {
-		err = errors.New("Bad parameters for GetRawChangeAddress: you can set 0 or 1 account")
+		err = errors.New("bad parameters for GetRawChangeAddress: you can set 0 or 1 account")
 		return
 	}
 	r, err := b.client.call("getrawchangeaddress", account)
@@ -462,7 +577,7 @@ func (b *Bitcoind) GetTxOutsetInfo() (txOutSet TransactionOutSet, err error) {
 // If [data] is specified, tries to solve the block and returns true if it was successful.
 func (b *Bitcoind) GetWork(data ...string) (response interface{}, err error) {
 	if len(data) > 1 {
-		err = errors.New("Bad parameters for GetWork: you can set 0 or 1 parameter data")
+		err = errors.New("bad parameters for GetWork: you can set 0 or 1 parameter data")
 		return
 	}
 	var r rpcResponse
@@ -661,8 +776,9 @@ func (b *Bitcoind) Move(formAccount, toAccount string, amount float64, minconf u
 }
 
 // SendFrom send amount from fromAccount to toAddress
-//  amount is a real and is rounded to 8 decimal places.
-//  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
+//
+//	amount is a real and is rounded to 8 decimal places.
+//	Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
 func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minconf uint32, comment, commentTo string) (txID string, err error) {
 	r, err := b.client.call("sendfrom", []interface{}{fromAccount, toAddress, amount, minconf, comment, commentTo})
 	if err = handleError(err, &r); err != nil {
@@ -846,16 +962,5 @@ func (b *Bitcoind) EstimateSmartFeeWithMode(minconf int, mode string) (ret Estim
 	}
 
 	err = json.Unmarshal(r.Result, &ret)
-	return
-}
-
-// GetWalletInfo - Returns an object containing various wallet state info.
-// https://bitcoincore.org/en/doc/0.16.0/rpc/wallet/getwalletinfo/
-func (b *Bitcoind) GetWalletInfo() (i WalletInfo, err error) {
-	r, err := b.client.call("getwalletinfo", nil)
-	if err = handleError(err, &r); err != nil {
-		return
-	}
-	err = json.Unmarshal(r.Result, &i)
 	return
 }
