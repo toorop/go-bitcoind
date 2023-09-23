@@ -267,14 +267,15 @@ func (b *Bitcoind) GetHashesPerSec() (hashpersec float64, err error) {
 
 // See https://developer.bitcoin.org/reference/rpc/getmempoolinfo.html
 type MemPoolInfo struct {
-	Loaded           bool  `json:"loaded"`
-	Size             int64 `json:"size"`
-	Bytes            int64 `json:"bytes"`
-	Usage            int64 `json:"usage"`
-	MaxMemPool       int64 `json:"maxmempool"`
-	MemPoolMinFee    int64 `json:"mempoolminfee"`
-	MinRelayTxFee    int64 `json:"minrelaytxfee"`
-	UnbroadcastCount int64 `json:"unbroadcastcount"`
+	Loaded           bool    `json:"loaded"`
+	Size             uint64  `json:"size"`
+	Bytes            uint64  `json:"bytes"`
+	Usage            uint64  `json:"usage"`
+	TotalFee         float64 `json:"total_fee"`
+	MaxMemPool       uint64  `json:"maxmempool"`
+	MemPoolMinFee    float64 `json:"mempoolminfee"`
+	MinRelayTxFee    float64 `json:"minrelaytxfee"`
+	UnbroadcastCount uint64  `json:"unbroadcastcount"`
 }
 
 // GetMemPoolInfo returns an object containing mem pool info
@@ -291,19 +292,20 @@ func (b *Bitcoind) GetMemPoolInfo() (*MemPoolInfo, error) {
 // See https://developer.bitcoin.org/reference/rpc/getblockchaininfo.html
 type BlockChainInfo struct {
 	Chain                string                 `json:"chain"`
-	Blocks               int64                  `json:"blocks"`
-	Headers              int64                  `json:"headers"`
+	Blocks               uint64                 `json:"blocks"`
+	Headers              uint64                 `json:"headers"`
 	BestBlockHash        string                 `json:"bestblockhash"`
-	Difficulty           int64                  `json:"difficulty"`
-	Mediantime           int64                  `json:"mediantime"`
-	VerificationProgress int64                  `json:"verificationprogress"`
+	Difficulty           uint64                 `json:"difficulty"`
+	Time                 uint64                 `json:"time"`
+	Mediantime           uint64                 `json:"mediantime"`
+	VerificationProgress uint64                 `json:"verificationprogress"`
 	InitialBlockDownload bool                   `json:"initialblockdownload"`
 	Chainwork            string                 `json:"chainwork"`
-	SizeOnDisk           int64                  `json:"size_on_disk"`
+	SizeOnDisk           uint64                 `json:"size_on_disk"`
 	Pruned               bool                   `json:"pruned"`
-	PruneHeight          int64                  `json:"pruneheight"`
+	PruneHeight          float64                `json:"pruneheight"`
 	AutomaticPruning     bool                   `json:"automatic_pruning"`
-	PruneTargetSize      int64                  `json:"prune_target_size"`
+	PruneTargetSize      float64                `json:"prune_target_size"`
 	Softforks            map[string]interface{} `json:"softforks"`
 	Warnings             string                 `json:"warnings"`
 }
@@ -320,28 +322,28 @@ func (b *Bitcoind) GetBlockchainInfo() (*BlockChainInfo, error) {
 
 // See https://developer.bitcoin.org/reference/rpc/getnetworkinfo.html
 type NetworkInfo struct {
-	Version            int64          `json:"version"`
+	Version            uint64         `json:"version"`
 	Subversion         string         `json:"subversion"`
-	ProtocolVersion    int64          `json:"protocolversion"`
+	ProtocolVersion    uint64         `json:"protocolversion"`
 	LocalServices      string         `json:"localservices"`
 	LocalServicesNames []string       `json:"localservicesnames"`
 	LocalRelay         bool           `json:"localrelay"`
-	Timeoffset         int64          `json:"timeoffset"`
-	Connections        int64          `json:"connections"`
-	ConnectionsIn      int64          `json:"connections_in"`
-	ConnectionsOut     int64          `json:"connections_out"`
+	Timeoffset         uint64         `json:"timeoffset"`
+	Connections        uint64         `json:"connections"`
+	ConnectionsIn      uint64         `json:"connections_in"`
+	ConnectionsOut     uint64         `json:"connections_out"`
 	NetworkActive      bool           `json:"networkactive"`
 	Networks           []Network      `json:"networks"`
-	RelayFee           int64          `json:"relayfee"`
-	IncrementalFee     int64          `json:"incrementalfee"`
+	RelayFee           float64        `json:"relayfee"`
+	IncrementalFee     float64        `json:"incrementalfee"`
 	LocalAddresses     []LocalAddress `json:"localaddresses"`
 	Warnings           string         `json:"warnings"`
 }
 
 type LocalAddress struct {
-	Address string `json:"address"`
-	Port    int64  `json:"port"`
-	Score   int64  `json:"score"`
+	Address string  `json:"address"`
+	Port    uint64  `json:"port"`
+	Score   float64 `json:"score"`
 }
 
 type Network struct {
@@ -365,14 +367,14 @@ func (b *Bitcoind) GetNetworkInfo() (*NetworkInfo, error) {
 // See https://developer.bitcoin.org/reference/rpc/getwalletinfo.html
 type WalletInfo struct {
 	WalletName            string   `json:"walletname"`
-	WalletVersion         int64    `json:"walletversion"`
+	WalletVersion         uint64   `json:"walletversion"`
 	Format                string   `json:"format"`
-	TxCount               int64    `json:"txcount"`
-	KeyPoolOldest         int64    `json:"keypoololdest"`
-	KeyPoolSize           int64    `json:"keypoolsize"`
-	KeyPoolSizeHdInternal int64    `json:"keypoolsize_hd_internal"`
-	UnlockedUntil         int64    `json:"unlocked_until"`
-	PayTxFee              int64    `json:"paytxfee"`
+	TxCount               uint64   `json:"txcount"`
+	KeyPoolOldest         uint64   `json:"keypoololdest"`
+	KeyPoolSize           uint64   `json:"keypoolsize"`
+	KeyPoolSizeHdInternal uint64   `json:"keypoolsize_hd_internal"`
+	UnlockedUntil         uint64   `json:"unlocked_until"`
+	PayTxFee              float64  `json:"paytxfee"`
 	HdSeedId              string   `json:"hdseedid"`
 	PrivateKeysEnabled    bool     `json:"private_keys_enabled"`
 	AvoidReuse            bool     `json:"avoid_reuse"`
@@ -381,8 +383,8 @@ type WalletInfo struct {
 }
 
 type Scanning struct {
-	Duration int64 `json:"duration"`
-	Progress int64 `json:"progress"`
+	Duration uint64  `json:"duration"`
+	Progress float64 `json:"progress"`
 }
 
 func (b *Bitcoind) GetWalletInfo() (*WalletInfo, error) {
