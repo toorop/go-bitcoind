@@ -295,7 +295,7 @@ type BlockChainInfo struct {
 	Blocks                  uint64  `json:"blocks"`
 	Headers                 uint64  `json:"headers"`
 	BestBlockHash           string  `json:"bestblockhash"`
-	Difficulty              uint64  `json:"difficulty"`
+	Difficulty              float64 `json:"difficulty"`
 	Time                    uint64  `json:"time"`
 	Mediantime              uint64  `json:"mediantime"`
 	VerificationProgress    float64 `json:"verificationprogress"`
