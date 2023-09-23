@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/toorop/go-bitcoind"
 	"log"
+
+	"github.com/jon-ryan/go-bitcoind"
 )
 
 const (
