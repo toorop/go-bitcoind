@@ -320,6 +320,7 @@ func (b *Bitcoind) GetBlockchainInfo() (blockChainInfo *BlockChainInfo, err erro
 type NetworkInfo struct {
 	Version            int64          `json:"version"`
 	Subversion         string         `json:"subversion"`
+	ProtocolVersion    int64          `json:"protocolversion"`
 	LocalServices      string         `json:"localservices"`
 	LocalServicesNames []string       `json:"localservicesnames"`
 	LocalRelay         bool           `json:"localrelay"`
