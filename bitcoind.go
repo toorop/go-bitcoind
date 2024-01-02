@@ -91,8 +91,8 @@ func (b *Bitcoind) GetAddressesByAccount(account string) (addresses []string, er
 }
 
 // GetBalance return the balance of the server or of a specific account
-//If [account] is "", returns the server's total available balance.
-//If [account] is specified, returns the balance in the account
+// If [account] is "", returns the server's total available balance.
+// If [account] is specified, returns the balance in the account
 func (b *Bitcoind) GetBalance(account string, minconf uint64) (balance float64, err error) {
 	r, err := b.client.call("getbalance", []interface{}{account, minconf})
 	if err = handleError(err, &r); err != nil {
@@ -145,6 +145,16 @@ func (b *Bitcoind) GetBestBlockhash() (bestBlockHash string, err error) {
 // GetBlock returns information about the block with the given hash.
 func (b *Bitcoind) GetBlock(blockHash string) (block Block, err error) {
 	r, err := b.client.call("getblock", []string{blockHash})
+	if err = handleError(err, &r); err != nil {
+		return
+	}
+	err = json.Unmarshal(r.Result, &block)
+	return
+}
+
+// GetBlockV2 returns verbose "2" information about the block with the given hash.
+func (b *Bitcoind) GetBlockV2(blockHash string) (block BlockV2, err error) {
+	r, err := b.client.call("getblock", []interface{}{blockHash, 2})
 	if err = handleError(err, &r); err != nil {
 		return
 	}
@@ -661,8 +671,9 @@ func (b *Bitcoind) Move(formAccount, toAccount string, amount float64, minconf u
 }
 
 // SendFrom send amount from fromAccount to toAddress
-//  amount is a real and is rounded to 8 decimal places.
-//  Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
+//
+//	amount is a real and is rounded to 8 decimal places.
+//	Will send the given amount to the given address, ensuring the account has a valid balance using [minconf] confirmations.
 func (b *Bitcoind) SendFrom(fromAccount, toAddress string, amount float64, minconf uint32, comment, commentTo string) (txID string, err error) {
 	r, err := b.client.call("sendfrom", []interface{}{fromAccount, toAddress, amount, minconf, comment, commentTo})
 	if err = handleError(err, &r); err != nil {
