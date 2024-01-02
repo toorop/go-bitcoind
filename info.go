@@ -50,20 +50,3 @@ type Info struct {
 	//  Any error messages
 	Errors string `json:"errors"`
 }
-
-// WalletInfo - wallet state info
-// https://bitcoincore.org/en/doc/0.16.0/rpc/wallet/getwalletinfo/
-type WalletInfo struct {
-	WalletName            string  `json:"walletname"`
-	WalletVersion         float64 `json:"walletversion"`
-	Balance               float64 `json:"balance"`
-	UnconfirmedBalance    float64 `json:"unconfirmed_balance"`
-	ImmatureBalance       float64 `json:"immature_balance"`
-	TxCount               int64   `json:"txcount"`
-	KeyPoolOldest         int64   `json:"keypoololdest"`
-	KeyPoolSize           int64   `json:"keypoolsize"`
-	KeyPoolSizeHdInternal int64   `json:"keypoolsize_hd_internal"`
-	UnlockedUntil         *int64  `json:"unlocked_until"`
-	PaytxFee              float64 `json:"paytxfee"`
-	HdMasterKeyID         *string `json:"hdmasterkeyid"`
-}
